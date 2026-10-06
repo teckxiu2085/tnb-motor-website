@@ -1,0 +1,496 @@
+{
+  "_note": "Snapshot of the public stock list shown on the old site on 2026-10-06. Public fields only. null price = 'Ask for price'. year like '18/22' = manufactured 2018 / registered 2022 (recond).",
+  "snapshotAt": "2026-10-06T08:38:32.016Z",
+  "vehicles": [
+    {
+      "id": "v-b576e4a77f5422f79ad4",
+      "brand": "AUDI",
+      "model": "TT 2.0 AT TFSI",
+      "year": "2007",
+      "colour": "Black",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-c361c35ad4b8e01706c0.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-a52903e01657214c37bc",
+      "brand": "BMW",
+      "model": "520i M SPORT 2.0",
+      "year": "2016",
+      "colour": "Grey",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-3b19b04979b59188f435.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-1c2497c58082824779e3",
+      "brand": "HONDA",
+      "model": "ACCORD 2.4 AT",
+      "year": "2014",
+      "colour": "White",
+      "transmission": "Automatic",
+      "cashPriceRM": 42000,
+      "loanPriceRM": 45000,
+      "photos": [
+        "/cars/car-57792d95cc6cf60811d4.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-1cf4f03d963d03ffe230",
+      "brand": "HONDA",
+      "model": "CIVIC 1.5 AT RS",
+      "year": "2024",
+      "colour": "Kelabu",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-1b941ea545aecf9d1a60.jpeg"
+      ],
+      "featured": true
+    },
+    {
+      "id": "v-f8c21c71d9c96dc77219",
+      "brand": "HONDA",
+      "model": "CIVIC 1.5 AT VTEC V",
+      "year": "2023",
+      "colour": "Grey",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-e7262c64eec3b7d0d13c",
+      "brand": "HONDA",
+      "model": "CIVIC 1.5 AT VTEC V",
+      "year": "2023",
+      "colour": "Putih",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-04baa42f29a44df9dd1e.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-864b55ffbebe6c6d5be1",
+      "brand": "HONDA",
+      "model": "CIVIC 1.5 TCP",
+      "year": "2020",
+      "colour": "Grey",
+      "transmission": "Automatic",
+      "cashPriceRM": 83000,
+      "loanPriceRM": 88000,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-e812402d7ed80ae78b31",
+      "brand": "HONDA",
+      "model": "CRV 1.5 TC",
+      "year": "2017",
+      "colour": "Blue",
+      "transmission": "Automatic",
+      "cashPriceRM": 66000,
+      "loanPriceRM": 69000,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-ed5ee8c0316b63cc8a17",
+      "brand": "HONDA",
+      "model": "HRV 1.8 AT V",
+      "year": "2018",
+      "colour": "Red",
+      "transmission": "Automatic",
+      "cashPriceRM": 49000,
+      "loanPriceRM": 53000,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-ca771f5f617d6f0a989c",
+      "brand": "HONDA",
+      "model": "JAZZ 1.5 AT HYBRID",
+      "year": "2017",
+      "colour": "White",
+      "transmission": "Automatic",
+      "cashPriceRM": 43000,
+      "loanPriceRM": 47000,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-faa99156b41bce355b3c",
+      "brand": "LEXUS",
+      "model": "ES250 2.5 AT LUXURY LOCAL",
+      "year": "2021",
+      "colour": "White",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-6ca9ad0a6a7c5359eb54.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-1bb0c1e886204066bd79",
+      "brand": "LEXUS",
+      "model": "RX300 2.0 AT F SPORT AWD",
+      "year": "18/22",
+      "colour": "Putih",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-8bfbae7db6a43758d735.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-de714a741ab33c003b6c",
+      "brand": "MAZDA",
+      "model": "CX5 2.5 AT GLS",
+      "year": "2018",
+      "colour": "Blue",
+      "transmission": "Automatic",
+      "cashPriceRM": 59000,
+      "loanPriceRM": 65000,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-35cf553cc68b0c3b2b65",
+      "brand": "MERCEDES",
+      "model": "BENZ A35 AMG 2.0 AT",
+      "year": "2022",
+      "colour": "White",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-6d9d0d954157e0d018d1.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-12932c759a9f3fe39068",
+      "brand": "MERCEDES",
+      "model": "BENZ C180 1.6 AT",
+      "year": "2018",
+      "colour": "Grey",
+      "transmission": "Automatic",
+      "cashPriceRM": 85000,
+      "loanPriceRM": 89000,
+      "photos": [
+        "/cars/car-38c1a83ec5a2abbcae21.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-b6dfefd02838b85ba4f8",
+      "brand": "MERCEDES",
+      "model": "BENZ C43 3.0 AT AMG JAPAN",
+      "year": "17/22",
+      "colour": "White",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-681cdd4bdfcde57996ab.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-b0756dbbdc4b8aabd9f6",
+      "brand": "MERCEDES",
+      "model": "BENZ CLA250 2.0 AT AMG JAPAN",
+      "year": "20/22",
+      "colour": "White",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-2afcfef08d5704ddde23.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-3779a02c52db7c89e081",
+      "brand": "MERCEDES",
+      "model": "BENZ E250 1.8 AT",
+      "year": "11/12",
+      "colour": "Silver",
+      "transmission": "Automatic",
+      "cashPriceRM": 27800,
+      "loanPriceRM": 32800,
+      "photos": [
+        "/cars/car-bfd052f8cdb363e5d359.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-57655f4732dd69ad24c0",
+      "brand": "MERCEDES",
+      "model": "BENZ GLA200 1.3 AT LOCAL",
+      "year": "2022",
+      "colour": "Black",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-a624fc615ceb60e3753b.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-dc51fef0eaa03d5ec0ce",
+      "brand": "NISSAN",
+      "model": "SERENA 2.0 AT H.STAR SHYBRID",
+      "year": "2017",
+      "colour": "White",
+      "transmission": "Automatic",
+      "cashPriceRM": 49000,
+      "loanPriceRM": 53000,
+      "photos": [
+        "/cars/car-ee902c2adcb1a86d333a.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-125a450b7e5f867f846b",
+      "brand": "PERODUA",
+      "model": "ARUZ 1.5 AT AV",
+      "year": "2025",
+      "colour": "Grey",
+      "transmission": "Automatic",
+      "cashPriceRM": 62000,
+      "loanPriceRM": 64000,
+      "photos": [
+        "/cars/car-2ee151b4af5c7cb30387.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-44371430b73c8200fb6a",
+      "brand": "PERODUA",
+      "model": "ALZA 1.5 AT ADVANCE",
+      "year": "2014",
+      "colour": "Purple",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-bea901a5f409897276eb",
+      "brand": "PERODUA",
+      "model": "AXIA 1.0 AT G XTRA",
+      "year": "2021",
+      "colour": "White",
+      "transmission": "Automatic",
+      "cashPriceRM": 27000,
+      "loanPriceRM": 29000,
+      "photos": [
+        "/cars/car-3d9c0f88fec7990cabd3.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-43c1e2f545c3a52e882e",
+      "brand": "PERODUA",
+      "model": "AXIA 1.0 AT G",
+      "year": "2022",
+      "colour": "Blue",
+      "transmission": "Automatic",
+      "cashPriceRM": 29000,
+      "loanPriceRM": 31000,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-bfd8d1f7da631ec0e372",
+      "brand": "PERODUA",
+      "model": "MYVI 1.3 AT EZI",
+      "year": "2013",
+      "colour": "Silver",
+      "transmission": "Automatic",
+      "cashPriceRM": 21000,
+      "loanPriceRM": 23000,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-12c54cd7ace7dbed9d14",
+      "brand": "PERODUA",
+      "model": "MYVI 1.5 AT H",
+      "year": "2024",
+      "colour": "White",
+      "transmission": "Automatic",
+      "cashPriceRM": 43000,
+      "loanPriceRM": 46000,
+      "photos": [
+        "/cars/car-4cbadc0e71c8ecdb57e8.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-a046d574ae410feb50b7",
+      "brand": "PROTON",
+      "model": "EXORA 1.6 MT",
+      "year": "2011",
+      "colour": "WHite",
+      "transmission": "Manual",
+      "cashPriceRM": 9800,
+      "loanPriceRM": 12800,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-5ac867f81ad7615fb0b7",
+      "brand": "PROTON",
+      "model": "ISWARA 1.3 MT",
+      "year": "2003",
+      "colour": "Silver",
+      "transmission": "Manual",
+      "cashPriceRM": 2800,
+      "loanPriceRM": null,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-426a946f3f8f4abe043e",
+      "brand": "PROTON",
+      "model": "PERDANA 2.0 AT",
+      "year": "2003",
+      "colour": "Blue",
+      "transmission": "Automatic",
+      "cashPriceRM": 3300,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-2f3b7765c6c2376b7be0.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-cd53b0a3c9d825bb166e",
+      "brand": "PROTON",
+      "model": "SAGA 1.3 AT STANDARD",
+      "year": "2020",
+      "colour": "Grey",
+      "transmission": "Automatic",
+      "cashPriceRM": 25000,
+      "loanPriceRM": 29000,
+      "photos": [
+        "/cars/car-a69ac887ce228be61cd6.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-b36d3b753b9a555872a1",
+      "brand": "PROTON",
+      "model": "SAGA 1.3 AT PREMIUM R3",
+      "year": "2021",
+      "colour": "Black",
+      "transmission": "Automatic",
+      "cashPriceRM": 29000,
+      "loanPriceRM": 33000,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-bdae405eb812d467ad9f",
+      "brand": "TOYOTA",
+      "model": "COROLLA SPORT 1.2 AT",
+      "year": "19/23",
+      "colour": "Putih",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-b2464397a60684035dfa.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-3a1b2b0022930fc8c47b",
+      "brand": "TOYOTA",
+      "model": "HILUX 2.4 AT E 4X4",
+      "year": "2021",
+      "colour": "Silver",
+      "transmission": "Automatic",
+      "cashPriceRM": 82000,
+      "loanPriceRM": 86000,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-47ded296e370c9b28352",
+      "brand": "TOYOTA",
+      "model": "VELLFIRE 2.5 AT ZG EDITON",
+      "year": "16/17",
+      "colour": "Hitam",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [
+        "/cars/car-1ca79ad9353e068823c9.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-705d2152a6a130f6f76f",
+      "brand": "TOYOTA",
+      "model": "VIOS 1.5 AT G",
+      "year": "2016",
+      "colour": "Silver",
+      "transmission": "Automatic",
+      "cashPriceRM": null,
+      "loanPriceRM": null,
+      "photos": [],
+      "featured": false
+    },
+    {
+      "id": "v-16ea99f5bd9843073023",
+      "brand": "TOYOTA",
+      "model": "VIOS 1.5 AT J",
+      "year": "2015",
+      "colour": "Silver",
+      "transmission": "Automatic",
+      "cashPriceRM": 35000,
+      "loanPriceRM": 39000,
+      "photos": [
+        "/cars/car-7de0aa3f389d63dd9eee.jpeg"
+      ],
+      "featured": false
+    },
+    {
+      "id": "v-f56e708a110c80caf579",
+      "brand": "TOYOTA",
+      "model": "VIOS 1.5 AT E",
+      "year": "2018",
+      "colour": "Red",
+      "transmission": "Automatic",
+      "cashPriceRM": 48000,
+      "loanPriceRM": 53000,
+      "photos": [
+        "/cars/car-ed91ed2c8189be3c7eeb.jpeg"
+      ],
+      "featured": false
+    }
+  ]
+}
