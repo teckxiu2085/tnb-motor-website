@@ -7,11 +7,18 @@
   "state": "Johor",
   "country": "Malaysia",
   "currency": "RM",
-  "whatsappMain": "TODO: company WhatsApp number in international format, e.g. 60123456789",
-  "phone": "TODO",
-  "address": "TODO: full street address",
-  "googleMapsUrl": "TODO",
-  "openingHours": "TODO: e.g. Mon-Sat 9:30am-7pm, Sun by appointment",
+  "whatsappMain": "60104627388",
+  "phone": "010-462 7388",
+  "address": "34, Jalan Ekoperniagaan 2, Taman Kota Masai, 81700 Pasir Gudang, Johor",
+  "googleMapsUrl": "https://maps.app.goo.gl/MYUspcP7648fvx5u9",
+  "googleMapsPlace": "Tnb Motor",
+  "geo": {
+    "lat": 1.4827658,
+    "lng": 103.9383199,
+    "_note": "from the Google Maps link above"
+  },
+  "openingHours": "Open daily, 9:00am - 10:00pm",
+  "openingHoursSchema": "Mo-Su 09:00-22:00",
   "social": {
     "tiktok": "TODO",
     "facebook": "TODO",
@@ -19,10 +26,35 @@
     "xiaohongshu": "TODO"
   },
   "team": [
-    { "name": "ATIONG", "role": "TODO: title (e.g. Founder)", "photo": "TODO", "whatsapp": null },
-    { "name": "Howard", "role": "Sales Manager", "photo": "TODO", "whatsapp": null },
-    { "name": "WENDY", "role": "Sales", "photo": "TODO", "whatsapp": null, "languages": ["Mandarin", "Malay"] },
-    { "name": "XIU", "role": "Sales Consultant", "photo": "TODO", "whatsapp": null, "_confirm": "TODO: confirm XIU should appear on the company site" }
+    {
+      "name": "ATIONG",
+      "role": "TODO: title (e.g. Founder)",
+      "photo": "TODO",
+      "whatsapp": null
+    },
+    {
+      "name": "Howard",
+      "role": "Sales Manager",
+      "photo": "TODO",
+      "whatsapp": null
+    },
+    {
+      "name": "WENDY",
+      "role": "Sales",
+      "photo": "TODO",
+      "whatsapp": null,
+      "languages": [
+        "Mandarin",
+        "Malay"
+      ]
+    },
+    {
+      "name": "XIU",
+      "role": "Sales Consultant",
+      "photo": "TODO",
+      "whatsapp": null,
+      "_confirm": "TODO: confirm XIU should appear on the company site"
+    }
   ],
   "pricingNotes": [
     "Prices are on the road, excluding insurance.",
