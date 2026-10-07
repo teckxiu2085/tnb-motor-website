@@ -41,6 +41,7 @@ const EXPLAIN = {
   'not-setup': 'Apps Script 还没设定好：请在 Apps Script 里执行一次 setup。',
   'sheet-not-found': 'Google 表里找不到「STOCKLIST TNB」这一页（是不是改了名字？）。',
   'columns-missing': 'Google 表的表头被改了，找不到 Plate Number / Year / Colour / Cash / Loan。',
+  'tab-exists': 'Google 表里本来就有一页叫 WEBSITE，Apps Script 不会盖掉它：请把那一页改名。',
   server: 'Apps Script 出错了。请打开 Apps Script → 执行（Executions）看看错误。',
 };
 
