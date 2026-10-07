@@ -1,0 +1,71 @@
+---
+// Phone-only bar fixed to the bottom of a car page: price on the left, WhatsApp on the right.
+import Icon from './Icon.astro';
+
+interface Props {
+  wa: string | null;
+  label: string;
+  value: string;
+}
+const { wa, label, value } = Astro.props;
+---
+
+{
+  wa && (
+    <div class="sticky-contact">
+      <div class="sticky-contact__price">
+        <span class="sticky-contact__label">{label}</span>
+        <span class="sticky-contact__value mono">{value}</span>
+      </div>
+      <a class="btn btn--red" href={wa} target="_blank" rel="noopener">
+        <Icon name="whatsapp" />
+        WhatsApp
+      </a>
+    </div>
+  )
+}
+
+<style>
+  .sticky-contact {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom));
+    background: rgb(11 11 12 / 0.88);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border-top: 1px solid var(--line);
+    view-transition-name: sticky-contact;
+  }
+  .sticky-contact__price {
+    display: grid;
+    line-height: 1.2;
+    min-width: 0;
+  }
+  .sticky-contact__label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+  .sticky-contact__value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .sticky-contact .btn {
+    flex: none;
+  }
+  @media (min-width: 900px) {
+    .sticky-contact {
+      display: none;
+    }
+  }
+</style>

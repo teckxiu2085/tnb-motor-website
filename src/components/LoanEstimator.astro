@@ -1,0 +1,243 @@
+---
+// Monthly instalment estimate (flat-rate hire purchase). Defaults come from content/company.json → loanEstimator.
+import { company } from '../data/company';
+import { formatRM, monthlyInstalment } from '../lib/format';
+
+interface Props {
+  price: number;
+}
+const { price } = Astro.props;
+const { downPaymentPercent: down, interestRatePercent: rate, tenureYears: years } = company.loanEstimator;
+const tenures = [...new Set([5, 7, 9, years])].sort((a, b) => a - b);
+const initial = monthlyInstalment(price, down, rate, years);
+const id = `est-${Math.round(price)}`;
+---
+
+<section class="estimator" aria-labelledby={`${id}-title`} data-estimator data-price={price}>
+  <div class="estimator__head">
+    <h2 class="estimator__title" id={`${id}-title`}>Monthly instalment estimate</h2>
+    <p class="estimator__result" aria-live="polite">
+      <span class="mono" data-monthly>{formatRM(Math.round(initial))}</span>
+      <span class="estimator__per">/ month</span>
+    </p>
+    <p class="estimator__basis">
+      Based on the loan price of <span class="mono">{formatRM(price)}</span>
+    </p>
+  </div>
+
+  <div class="estimator__controls">
+    <label class="estimator__row" for={`${id}-down`}>
+      <span class="field__label">Down payment</span>
+      <output class="mono" for={`${id}-down`} data-down-out>{down}% · {formatRM(Math.round((price * down) / 100))}</output>
+    </label>
+    <input class="estimator__range" id={`${id}-down`} type="range" min="0" max="50" step="5" value={down} data-down />
+
+    <fieldset class="estimator__tenure">
+      <legend class="field__label">Loan period</legend>
+      <div class="segmented">
+        {
+          tenures.map((t) => (
+            <label>
+              <input type="radio" name={`${id}-years`} value={t} checked={t === years} data-years />
+              <span>{t} years</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <label class="estimator__row estimator__rate" for={`${id}-rate`}>
+      <span class="field__label">Interest rate (flat, per year)</span>
+      <span class="estimator__rate-input">
+        <input class="control mono" id={`${id}-rate`} type="number" inputmode="decimal" min="0" max="15" step="0.05" value={rate} data-rate />
+        <span aria-hidden="true">%</span>
+      </span>
+    </label>
+  </div>
+
+  <p class="estimator__note"><strong>Estimate only, subject to bank approval.</strong> Ask our team for an exact quote.</p>
+</section>
+
+<script>
+  import { monthlyInstalment } from '../lib/format';
+
+  const rm = new Intl.NumberFormat('en-MY', { maximumFractionDigits: 0 });
+  document.querySelectorAll<HTMLElement>('[data-estimator]').forEach((root) => {
+    const price = Number(root.dataset.price);
+    const down = root.querySelector<HTMLInputElement>('[data-down]')!;
+    const rate = root.querySelector<HTMLInputElement>('[data-rate]')!;
+    const years = [...root.querySelectorAll<HTMLInputElement>('[data-years]')];
+    const out = root.querySelector('[data-monthly]')!;
+    const downOut = root.querySelector('[data-down-out]')!;
+
+    const update = () => {
+      const d = Number(down.value);
+      const r = Math.max(0, Number(rate.value) || 0);
+      const y = Number(years.find((el) => el.checked)?.value ?? 9);
+      out.textContent = `RM ${rm.format(Math.round(monthlyInstalment(price, d, r, y)))}`;
+      downOut.textContent = `${d}% · RM ${rm.format(Math.round((price * d) / 100))}`;
+      down.style.setProperty('--fill', `${(d / Number(down.max)) * 100}%`);
+    };
+    root.addEventListener('input', update);
+    root.addEventListener('change', update);
+    update();
+  });
+</script>
+
+<style>
+  .estimator {
+    display: grid;
+    gap: 22px;
+    padding: clamp(20px, 4vw, 28px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .estimator__title {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+  .estimator__result {
+    margin-top: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .estimator__result .mono {
+    font-size: clamp(2rem, 8vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .estimator__per {
+    color: var(--grey);
+  }
+  .estimator__basis {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: var(--grey);
+  }
+  .estimator__controls {
+    display: grid;
+    gap: 14px;
+  }
+  .estimator__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .estimator__row output {
+    font-size: 0.95rem;
+  }
+  .estimator__range {
+    --fill: 20%;
+    width: 100%;
+    height: 32px;
+    margin: 0 0 6px;
+    background: transparent;
+    appearance: none;
+    cursor: pointer;
+  }
+  .estimator__range::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--red) var(--fill), var(--surface-2) var(--fill));
+  }
+  .estimator__range::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--surface-2);
+  }
+  .estimator__range::-moz-range-progress {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--red);
+  }
+  .estimator__range::-webkit-slider-thumb {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    margin-top: -10px;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.5);
+  }
+  .estimator__range::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--white);
+  }
+  .estimator__tenure {
+    margin: 0 0 6px;
+    padding: 0;
+    border: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .estimator__tenure legend {
+    margin-bottom: 8px;
+  }
+  .segmented {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--surface-2);
+  }
+  .segmented label {
+    position: relative;
+  }
+  .segmented input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .segmented span {
+    display: grid;
+    place-items: center;
+    min-height: 40px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--grey);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .segmented input:checked + span {
+    background: var(--white);
+    color: var(--black);
+  }
+  .segmented input:focus-visible + span {
+    outline: 2px solid var(--white);
+    outline-offset: 2px;
+  }
+  .estimator__rate-input {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .estimator__rate-input .control {
+    width: 96px;
+    min-height: 44px;
+    text-align: right;
+  }
+  .estimator__note {
+    font-size: 0.85rem;
+    color: var(--grey);
+  }
+  .estimator__note strong {
+    color: var(--white);
+    font-weight: 600;
+  }
+</style>

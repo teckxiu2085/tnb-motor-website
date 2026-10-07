@@ -19,6 +19,7 @@ interface Props {
   floatingWhatsApp?: boolean;
   jsonLd?: Record<string, unknown>[];
   noindex?: boolean;
+  bodyClass?: string;
 }
 
 const {
@@ -31,6 +32,7 @@ const {
   floatingWhatsApp = true,
   jsonLd = [],
   noindex = false,
+  bodyClass,
 } = Astro.props;
 
 const canonical = absoluteUrl(path, Astro.site);
@@ -69,7 +71,7 @@ const ogImage = absoluteUrl(image, Astro.site);
     {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}
     <slot name="head" />
   </head>
-  <body>
+  <body class={bodyClass}>
     <a class="skip-link" href="#main">Skip to content</a>
     <Header current={current} />
     <main id="main">

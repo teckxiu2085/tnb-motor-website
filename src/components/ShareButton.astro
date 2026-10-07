@@ -1,0 +1,41 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  url: string;
+  title: string;
+  text?: string;
+  class?: string;
+}
+const { url, title, text, class: className } = Astro.props;
+---
+
+<button class:list={['btn btn--outline share-btn', className]} type="button" data-share data-url={url} data-title={title} data-text={text}>
+  <Icon name="share" />
+  <span data-share-label>Share</span>
+</button>
+
+<script>
+  // Native share sheet on phones (WhatsApp, Facebook…); copy link elsewhere.
+  document.querySelectorAll<HTMLButtonElement>('[data-share]').forEach((btn) => {
+    const label = btn.querySelector('[data-share-label]')!;
+    btn.addEventListener('click', async () => {
+      const { url = location.href, title = document.title, text } = btn.dataset;
+      if (navigator.share) {
+        try {
+          await navigator.share({ url, title, text });
+        } catch {
+          /* user closed the share sheet */
+        }
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        label.textContent = 'Link copied';
+      } catch {
+        window.prompt('Copy this link:', url);
+      }
+      setTimeout(() => (label.textContent = 'Share'), 2200);
+    });
+  });
+</script>
