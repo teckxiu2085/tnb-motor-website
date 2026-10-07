@@ -7,13 +7,11 @@ export function waLink(message: string): string | null {
   return `https://wa.me/${company.whatsapp}?text=${encodeURIComponent(message)}`;
 }
 
-const carLabel = (car: Vehicle) => `${car.year} ${car.name} (${car.colour})`;
-
 export const messages = {
   general: () => `Hi ${company.brandName}, I'd like to ask about your cars.`,
-  car: (car: Vehicle, url: string) => `Hi ${company.brandName}, I'm interested in the ${carLabel(car)}. ${url}`,
+  car: (car: Vehicle, url: string) => `Hi ${company.brandName}, I'm interested in the ${car.label}. ${url}`,
   photos: (car: Vehicle, url: string) =>
-    `Hi ${company.brandName}, could you send me photos of the ${carLabel(car)}? ${url}`,
+    `Hi ${company.brandName}, could you send me photos of the ${car.label}? ${url}`,
   sell: () => `Hi ${company.brandName}, I'd like to sell / consign my car.\nModel:\nYear:`,
   team: (name: string) => `Hi ${company.brandName}, I'd like to speak with ${name}.`,
 };

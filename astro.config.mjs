@@ -23,7 +23,8 @@ export default defineConfig({
       // Built-in sharp service + focal-point cropping for car cards (see src/lib/image-service.ts).
       entrypoint: fileURLToPath(new URL('./src/lib/image-service.ts', import.meta.url)),
       config: {
-        avif: { quality: 50 },
+        // effort 2: ~6× faster than the default for files only ~4% bigger (matters when many photos arrive at once)
+        avif: { quality: 50, effort: 2 },
         webp: { quality: 74 },
         jpeg: { quality: 78, mozjpeg: true },
       },

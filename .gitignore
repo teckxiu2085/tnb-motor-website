@@ -3,6 +3,9 @@ dist/
 .astro/
 .cache/
 
+# car photos synced from Google Drive (kept in the GitHub Actions cache, not in the repository)
+src/assets/cars/live/
+
 # dependencies
 node_modules/
 

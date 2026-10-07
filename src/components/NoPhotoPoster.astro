@@ -10,14 +10,14 @@ interface Props {
 const { car, size = 'card' } = Astro.props;
 ---
 
-<div class:list={['poster', `poster--${size}`]} role="img" aria-label={`${car.title}, ${car.colour} — photos available on request`}>
+<div class:list={['poster', `poster--${size}`]} role="img" aria-label={`${car.label} — photos available on request`}>
   <span class="poster__mark" aria-hidden="true">{car.brand}</span>
   <div class="poster__top">
     <span class="poster__brand">{car.brand}</span>
     <span class="poster__year mono">{car.year}</span>
   </div>
   <p class="poster__model" aria-hidden="true">{car.model}</p>
-  <p class="poster__note" aria-hidden="true">{car.colour} · Photos on request</p>
+  <p class="poster__note" aria-hidden="true">{[car.colour, 'Photos on request'].filter(Boolean).join(' · ')}</p>
   <TriBar class="poster__bar" thick />
 </div>
 

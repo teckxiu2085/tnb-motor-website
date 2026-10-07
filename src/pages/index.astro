@@ -73,10 +73,11 @@ const dealerLd: Record<string, unknown> = {
             <div class="hero__frame" style={`view-transition-name: car-${hero.slug}`}>
               <Picture
                 src={hero.photos[0]}
-                alt={`${hero.title} in ${hero.colour}`}
+                alt={hero.colour ? `${hero.title} in ${hero.colour}` : hero.title}
                 widths={[480, 750, 1080, 1440]}
                 sizes="(min-width: 900px) 46vw, 100vw"
-                formats={['avif', 'webp']}
+                formats={['avif']}
+                fallbackFormat="webp"
                 loading="eager"
                 fetchpriority="high"
                 decoding="async"

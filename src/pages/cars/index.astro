@@ -31,7 +31,7 @@ const itemList = {
     '@type': 'ListItem',
     position: i + 1,
     url: absoluteUrl(`cars/${v.slug}/`, Astro.site),
-    name: `${v.title} (${v.colour})`,
+    name: v.label,
   })),
 };
 ---

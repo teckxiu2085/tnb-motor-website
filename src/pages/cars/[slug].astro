@@ -1,6 +1,6 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { Picture } from 'astro:assets';
+import { Image, Picture } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import CarCard from '../../components/CarCard.astro';
 import Icon from '../../components/Icon.astro';
@@ -10,9 +10,9 @@ import ShareButton from '../../components/ShareButton.astro';
 import StickyContact from '../../components/StickyContact.astro';
 import TriBar from '../../components/TriBar.astro';
 import TnbStandard from '../../components/TnbStandard.astro';
-import { getVehicles, relatedTo, type Vehicle } from '../../data/vehicles';
+import { getVehicles, isLandscape, relatedTo, type Vehicle } from '../../data/vehicles';
 import { company, wazeUrl } from '../../data/company';
-import { ASK_FOR_PRICE, formatRM } from '../../lib/format';
+import { ASK_FOR_PRICE, ASK_OUR_TEAM, formatRM } from '../../lib/format';
 import { absoluteUrl, carPath, withBase } from '../../lib/url';
 import { messages, waLink } from '../../lib/whatsapp';
 
@@ -32,12 +32,15 @@ const url = absoluteUrl(carPath(car.slug), Astro.site);
 const cash = formatRM(car.cashPriceRM);
 const loan = formatRM(car.loanPriceRM);
 const hasPhoto = car.photos.length > 0;
+// The frame follows the cover photo (portrait 3:4 or landscape 4:3); other photos that don't match are shown whole.
+const landscapeCover = hasPhoto && isLandscape(car.photos[0]);
 const wa = waLink(messages.car(car, url));
 const waPhotos = hasPhoto ? null : waLink(messages.photos(car, url));
-const label = `${car.title} (${car.colour})`;
+const label = car.label;
+const knownTransmission = car.transmission !== ASK_OUR_TEAM;
 
 const priceText = cash ? `Cash price ${cash}` : loan ? `Loan price ${loan}` : 'Ask for price';
-const description = `${car.title}, ${car.colour}, ${car.transmission}${car.regYear ? `, registered ${car.regYear}` : ''}. ${priceText}. Available at ${company.brandName}, ${company.city}, ${company.state}${company.phone ? ` — WhatsApp ${company.phone}` : ''}.`;
+const description = `${[car.title, car.colour, knownTransmission ? car.transmission : ''].filter(Boolean).join(', ')}${car.regYear ? `, registered ${car.regYear}` : ''}. ${priceText}. Available at ${company.brandName}, ${company.city}, ${company.state}${company.phone ? ` — WhatsApp ${company.phone}` : ''}.`;
 
 const stickyLabel = cash ? 'Cash price' : loan ? 'Loan price' : 'Price';
 const stickyValue = cash ?? loan ?? ASK_FOR_PRICE;
@@ -51,8 +54,8 @@ const carLd: Record<string, unknown> = {
   model: car.model,
   vehicleModelDate: String(car.year),
   ...(car.regYear ? { dateVehicleFirstRegistered: String(car.regYear) } : {}),
-  color: car.colour,
-  vehicleTransmission: car.transmission,
+  ...(car.colour ? { color: car.colour } : {}),
+  ...(knownTransmission ? { vehicleTransmission: car.transmission } : {}),
   itemCondition: 'https://schema.org/UsedCondition',
   ...(hasPhoto ? { image: absoluteUrl(`og/${car.slug}.jpg`, Astro.site) } : {}),
   ...(car.cashPriceRM
@@ -91,22 +94,40 @@ const breadcrumbLd = {
 >
   <article class="car">
     <div class="car__media">
-      <div class:list={['car__media-inner', { 'car__media-inner--poster': !hasPhoto }]} style={`view-transition-name: car-${car.slug}`}>
+      <div
+        class:list={['car__media-inner', { 'car__media-inner--poster': !hasPhoto, 'car__media-inner--landscape': landscapeCover }]}
+        style={`view-transition-name: car-${car.slug}`}
+      >
         {
           hasPhoto ? (
             <div class="gallery" tabindex={car.photos.length > 1 ? 0 : undefined} aria-label={car.photos.length > 1 ? 'Photos' : undefined}>
-              {car.photos.map((photo, i) => (
-                <Picture
-                  src={photo}
-                  alt={i === 0 ? `${label}` : `${label}, photo ${i + 1}`}
-                  widths={[480, 750, 1080, 1440]}
-                  sizes="(min-width: 900px) 56vw, 100vw"
-                  formats={['avif', 'webp']}
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                  fetchpriority={i === 0 ? 'high' : undefined}
-                  decoding="async"
-                />
-              ))}
+              {car.photos.map((photo, i) =>
+                i === 0 ? (
+                  <Picture
+                    src={photo}
+                    alt={label}
+                    widths={[480, 750, 1080, 1440]}
+                    sizes="(min-width: 900px) 56vw, 100vw"
+                    formats={['avif']}
+                    fallbackFormat="webp"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                  />
+                ) : (
+                  // More photos: WebP only (every current browser shows it), two sizes — keeps builds fast.
+                  <Image
+                    src={photo}
+                    alt={`${label}, photo ${i + 1}`}
+                    widths={[750, 1440]}
+                    sizes="(min-width: 900px) 56vw, 100vw"
+                    format="webp"
+                    loading="lazy"
+                    decoding="async"
+                    class={isLandscape(photo) === landscapeCover ? undefined : 'gallery__whole'}
+                  />
+                ),
+              )}
             </div>
           ) : (
             <NoPhotoPoster car={car} size="hero" />
@@ -125,7 +146,7 @@ const breadcrumbLd = {
       <header class="car__head">
         <p class="eyebrow">{car.brand}</p>
         <h1 class="car__title">{car.model}</h1>
-        <p class="car__meta mono">{car.yearLabel} · {car.colour} · {car.transmission}</p>
+        <p class="car__meta mono">{[car.yearLabel, car.colour, car.transmission].filter(Boolean).join(' · ')}</p>
         <TriBar />
       </header>
 
@@ -200,7 +221,7 @@ const breadcrumbLd = {
           }
           <div>
             <dt>Colour</dt>
-            <dd>{car.colour}</dd>
+            <dd>{car.colour || ASK_OUR_TEAM}</dd>
           </div>
           <div>
             <dt>Transmission</dt>
@@ -208,7 +229,7 @@ const breadcrumbLd = {
           </div>
           <div>
             <dt>Mileage</dt>
-            <dd>Ask our team</dd>
+            <dd>{ASK_OUR_TEAM}</dd>
           </div>
         </dl>
       </section>
@@ -308,7 +329,8 @@ const breadcrumbLd = {
     background: #0e0e10;
     container-type: inline-size;
   }
-  .car__media-inner--poster {
+  .car__media-inner--poster,
+  .car__media-inner--landscape {
     aspect-ratio: 4 / 3;
   }
   .gallery {
@@ -321,7 +343,7 @@ const breadcrumbLd = {
   .gallery::-webkit-scrollbar {
     display: none;
   }
-  .gallery :global(picture) {
+  .gallery > :global(*) {
     flex: 0 0 100%;
     height: 100%;
     scroll-snap-align: start;
@@ -331,6 +353,9 @@ const breadcrumbLd = {
     height: 100%;
     object-fit: cover;
     object-position: 50% 60%;
+  }
+  .gallery :global(img.gallery__whole) {
+    object-fit: contain;
   }
   .gallery__hint {
     padding: 10px var(--gutter) 0;
@@ -510,6 +535,9 @@ const breadcrumbLd = {
     }
     .car__media-inner--poster {
       aspect-ratio: 4 / 5;
+    }
+    .car__media-inner--landscape {
+      aspect-ratio: 4 / 3;
     }
     .car__info {
       width: auto;

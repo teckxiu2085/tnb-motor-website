@@ -7,6 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "check": "node scripts/check-dist.mjs",
+    "sync": "node scripts/sync-stock.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

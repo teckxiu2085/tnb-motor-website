@@ -2,6 +2,7 @@
 // - every internal link / image points inside the base path and to a file that exists
 // - no "TODO" text leaks into the pages
 // - every car page has a WhatsApp button that mentions that car's page URL
+// - the stock snapshot (content/inventory.json) holds public fields only
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
@@ -62,8 +63,19 @@ for (const file of files) {
   }
 }
 
+// The repository is public: the stock snapshot may only hold the public fields the website uses.
+const TOP_FIELDS = new Set(['_note', 'source', 'snapshotAt', 'vehicles']);
+const CAR_FIELDS = new Set(['id', 'brand', 'model', 'year', 'colour', 'transmission', 'cashPriceRM', 'loanPriceRM', 'photos', 'featured']);
+const inventory = JSON.parse(await readFile('content/inventory.json', 'utf-8'));
+for (const key of Object.keys(inventory)) if (!TOP_FIELDS.has(key)) problems.push(`content/inventory.json: unexpected field "${key}"`);
+(inventory.vehicles ?? []).forEach((car, i) => {
+  for (const key of Object.keys(car)) if (!CAR_FIELDS.has(key)) problems.push(`content/inventory.json: car #${i + 1} has non-public field "${key}"`);
+});
+
 if (problems.length) {
   console.error(`✗ ${problems.length} problem(s) found:\n` + problems.map((p) => `  - ${p}`).join('\n'));
   process.exit(1);
 }
-console.log(`✓ ${files.length} pages checked: links OK, no TODO text, WhatsApp links on every car page.`);
+console.log(
+  `✓ ${files.length} pages checked: links OK, no TODO text, WhatsApp links on every car page; stock snapshot has public fields only.`,
+);

@@ -57,14 +57,15 @@ const data = filterData
       photo ? (
         <Picture
           src={photo}
-          alt={`${car.title} in ${car.colour}`}
+          alt={car.colour ? `${car.title} in ${car.colour}` : car.title}
           width={960}
           height={720}
           widths={[400, 640, 960]}
           sizes={sizes}
           fit="cover"
           position="50% 62%"
-          formats={['avif', 'webp']}
+          formats={['avif']}
+          fallbackFormat="webp"
           loading={eager ? 'eager' : 'lazy'}
           fetchpriority={priority ? 'high' : undefined}
           decoding="async"
@@ -79,7 +80,7 @@ const data = filterData
     <Heading class="car-card__model">
       <a href={href} class="car-card__link">{car.model}</a>
     </Heading>
-    <p class="car-card__meta mono">{car.yearLabel} · {car.colour} · {transmission}</p>
+    <p class="car-card__meta mono">{[car.yearLabel, car.colour, transmission].filter(Boolean).join(' · ')}</p>
     {
       cash || loan ? (
         <dl class="car-card__prices">

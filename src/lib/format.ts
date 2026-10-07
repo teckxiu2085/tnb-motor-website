@@ -1,5 +1,6 @@
 const rm = new Intl.NumberFormat('en-MY', { maximumFractionDigits: 0 });
 
+export const ASK_OUR_TEAM = 'Ask our team';
 export const ASK_FOR_PRICE = 'Ask for price';
 
 /** 42000 → "RM 42,000"; null → null (callers decide what to show). */

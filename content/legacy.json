@@ -1,0 +1,130 @@
+{
+  "_note": "Photos and details from the first stock snapshot (old website, 2026-10-06), by car page address. scripts/sync-stock.mjs uses them for a car until that car has photos in its Google Drive folder. transmission is only listed where the model name does not say AT / MT.",
+  "featured": [
+    "honda-civic-1-5-at-rs-2024-grey"
+  ],
+  "cars": {
+    "audi-tt-2-0-at-tfsi-2007-black": {
+      "photos": [
+        "car-c361c35ad4b8e01706c0.jpeg"
+      ]
+    },
+    "bmw-520i-m-sport-2-0-2016-grey": {
+      "photos": [
+        "car-3b19b04979b59188f435.jpeg"
+      ],
+      "transmission": "Automatic"
+    },
+    "honda-accord-2-4-at-2014-white": {
+      "photos": [
+        "car-57792d95cc6cf60811d4.jpeg"
+      ]
+    },
+    "honda-civic-1-5-at-rs-2024-grey": {
+      "photos": [
+        "car-1b941ea545aecf9d1a60.jpeg"
+      ]
+    },
+    "honda-civic-1-5-at-vtec-v-2023-white": {
+      "photos": [
+        "car-04baa42f29a44df9dd1e.jpeg"
+      ]
+    },
+    "honda-civic-1-5-tcp-2020-grey": {
+      "transmission": "Automatic"
+    },
+    "honda-crv-1-5-tc-2017-blue": {
+      "transmission": "Automatic"
+    },
+    "lexus-es250-2-5-at-luxury-local-2021-white": {
+      "photos": [
+        "car-6ca9ad0a6a7c5359eb54.jpeg"
+      ]
+    },
+    "lexus-rx300-2-0-at-f-sport-awd-2018-white": {
+      "photos": [
+        "car-8bfbae7db6a43758d735.jpeg"
+      ]
+    },
+    "mercedes-benz-a35-amg-2-0-at-2022-white": {
+      "photos": [
+        "car-6d9d0d954157e0d018d1.jpeg"
+      ]
+    },
+    "mercedes-benz-c180-1-6-at-2018-grey": {
+      "photos": [
+        "car-38c1a83ec5a2abbcae21.jpeg"
+      ]
+    },
+    "mercedes-benz-c43-3-0-at-amg-japan-2017-white": {
+      "photos": [
+        "car-681cdd4bdfcde57996ab.jpeg"
+      ]
+    },
+    "mercedes-benz-cla250-2-0-at-amg-japan-2020-white": {
+      "photos": [
+        "car-2afcfef08d5704ddde23.jpeg"
+      ]
+    },
+    "mercedes-benz-e250-1-8-at-2011-silver": {
+      "photos": [
+        "car-bfd052f8cdb363e5d359.jpeg"
+      ]
+    },
+    "mercedes-benz-gla200-1-3-at-local-2022-black": {
+      "photos": [
+        "car-a624fc615ceb60e3753b.jpeg"
+      ]
+    },
+    "nissan-serena-2-0-at-h-star-shybrid-2017-white": {
+      "photos": [
+        "car-ee902c2adcb1a86d333a.jpeg"
+      ]
+    },
+    "perodua-aruz-1-5-at-av-2025-grey": {
+      "photos": [
+        "car-2ee151b4af5c7cb30387.jpeg"
+      ]
+    },
+    "perodua-axia-1-0-at-g-xtra-2021-white": {
+      "photos": [
+        "car-3d9c0f88fec7990cabd3.jpeg"
+      ]
+    },
+    "perodua-myvi-1-5-at-h-2024-white": {
+      "photos": [
+        "car-4cbadc0e71c8ecdb57e8.jpeg"
+      ]
+    },
+    "proton-perdana-2-0-at-2003-blue": {
+      "photos": [
+        "car-2f3b7765c6c2376b7be0.jpeg"
+      ]
+    },
+    "proton-saga-1-3-at-standard-2020-grey": {
+      "photos": [
+        "car-a69ac887ce228be61cd6.jpeg"
+      ]
+    },
+    "toyota-corolla-sport-1-2-at-2019-white": {
+      "photos": [
+        "car-b2464397a60684035dfa.jpeg"
+      ]
+    },
+    "toyota-vellfire-2-5-at-zg-editon-2016-black": {
+      "photos": [
+        "car-1ca79ad9353e068823c9.jpeg"
+      ]
+    },
+    "toyota-vios-1-5-at-e-2018-red": {
+      "photos": [
+        "car-ed91ed2c8189be3c7eeb.jpeg"
+      ]
+    },
+    "toyota-vios-1-5-at-j-2015-silver": {
+      "photos": [
+        "car-7de0aa3f389d63dd9eee.jpeg"
+      ]
+    }
+  }
+}

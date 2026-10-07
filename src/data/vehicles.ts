@@ -1,5 +1,7 @@
 import type { ImageMetadata } from 'astro';
+import { baseSlug, detectTransmission, normaliseColour, parseYear, slugify, splitName } from './normalise.js';
 import { loadRawInventory, type RawRecord } from './source';
+import { ASK_OUR_TEAM } from '../lib/format';
 
 /** Public fields only. Anything else in the source (costs, notes, owners…) is dropped here. */
 const PUBLIC_FIELDS = [
@@ -34,80 +36,40 @@ export interface Vehicle {
   regYear: number | null;
   /** e.g. "2024" or "2018 · Reg. 2022" */
   yearLabel: string;
-  /** English colour, e.g. "Grey". */
+  /** English colour, e.g. "Grey". Empty when the stock list has no colour. */
   colour: string;
+  /** Title plus colour, e.g. "2024 HONDA CIVIC 1.5 AT RS (Grey)". */
+  label: string;
+  /** "Automatic", "Manual" or "Ask our team". */
   transmission: string;
   cashPriceRM: number | null;
   loanPriceRM: number | null;
   photos: ImageMetadata[];
-  /** Original photo file names (for build-time Open Graph images). */
+  /** Photo paths inside src/assets/cars (for build-time Open Graph images). */
   photoFiles: string[];
   featured: boolean;
   /** Lower = shown first in the default ("recommended") order. */
   rank: number;
 }
 
-// Photos live in src/assets/cars so Astro can resize and convert them (AVIF/WebP).
-const photoModules = import.meta.glob<{ default: ImageMetadata }>('../assets/cars/*.{jpeg,jpg,png,webp}', {
+// Photos live in src/assets/cars so Astro can resize and convert them (AVIF/WebP):
+// the original 23 photos at the top level, photos synced from Google Drive in live/ (see scripts/sync-stock.mjs).
+const photoModules = import.meta.glob<{ default: ImageMetadata }>('../assets/cars/**/*.{jpeg,jpg,png,webp}', {
   eager: true,
 });
-const photosByFile = new Map(
-  Object.entries(photoModules).map(([path, mod]) => [path.split('/').pop()!.toLowerCase(), mod.default]),
+const photosByPath = new Map(
+  Object.entries(photoModules).map(([path, mod]) => [path.replace('../assets/cars/', '').toLowerCase(), mod.default]),
 );
+/** "/cars/car-1.jpeg" → "car-1.jpeg", "/cars/live/p-2.jpg" → "live/p-2.jpg". */
+const photoPath = (value: string) => value.trim().replace(/^\/?cars\//, '').toLowerCase();
 
-// Malay → English, plus case clean-up ("WHite" → "White"). Original data is never changed.
-const COLOUR_WORDS: Record<string, string> = {
-  kelabu: 'Grey',
-  putih: 'White',
-  hitam: 'Black',
-  merah: 'Red',
-  biru: 'Blue',
-  perak: 'Silver',
-  ungu: 'Purple',
-  hijau: 'Green',
-  kuning: 'Yellow',
-  coklat: 'Brown',
-  oren: 'Orange',
-  jingga: 'Orange',
-  emas: 'Gold',
-  gray: 'Grey',
-};
-
-function normaliseColour(value: string): string {
-  return value
-    .trim()
-    .split(/\s+/)
-    .map((word) => COLOUR_WORDS[word.toLowerCase()] ?? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-}
-
-function parseYear(value: string): { year: number; regYear: number | null } {
-  const toFull = (part: string) => {
-    const n = Number(part);
-    if (part.length === 4) return n;
-    const thisYear = new Date().getFullYear() % 100;
-    return n <= thisYear + 1 ? 2000 + n : 1900 + n;
-  };
-  const [made, reg] = value.split('/').map((p) => p.trim());
-  const year = toFull(made);
-  const regYear = reg ? toFull(reg) : null;
-  return { year, regYear: regYear && regYear !== year ? regYear : null };
-}
-
-/** "MERCEDES" + "BENZ C180 1.6 AT" → brand "MERCEDES-BENZ", model "C180 1.6 AT". */
-function splitBrand(brand: string, model: string): { brand: string; model: string } {
-  const b = brand.trim().toUpperCase();
-  const m = model.trim();
-  if (b === 'MERCEDES' && /^BENZ\s+/i.test(m)) return { brand: 'MERCEDES-BENZ', model: m.replace(/^BENZ\s+/i, '') };
-  return { brand: b, model: m };
-}
-
-export function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+/**
+ * True for a landscape photo. Reads the size from Astro's private copy of the image data: touching the
+ * photo object itself would make Astro ship the full-size original file with the site.
+ */
+export function isLandscape(photo: ImageMetadata): boolean {
+  const plain = (photo as ImageMetadata & { clone?: ImageMetadata }).clone ?? photo;
+  return plain.width > plain.height;
 }
 
 const str = (v: unknown) => (typeof v === 'string' ? v : v == null ? '' : String(v));
@@ -129,18 +91,22 @@ async function build() {
     const r = pickPublic(record);
     if (!str(r.brand).trim() || !str(r.model).trim() || !str(r.year).trim()) continue;
 
-    const { brand, model } = splitBrand(str(r.brand), str(r.model));
+    const { brand, model } = splitName(`${str(r.brand)} ${str(r.model)}`);
+    if (!model) continue;
     const { year, regYear } = parseYear(str(r.year));
+    if (!Number.isFinite(year)) continue;
     const colour = normaliseColour(str(r.colour));
     const name = `${brand} ${model}`;
+    const title = `${year} ${name}`;
 
-    let slug = slugify(`${name} ${year} ${colour}`);
-    for (let n = 2; usedSlugs.has(slug); n++) slug = `${slugify(`${name} ${year} ${colour}`)}-${n}`;
+    const base = baseSlug({ brand, model, year, colour });
+    let slug = base;
+    for (let n = 2; usedSlugs.has(slug); n++) slug = `${base}-${n}`;
     usedSlugs.add(slug);
 
     const photoFiles = (Array.isArray(r.photos) ? r.photos : [])
-      .map((p) => str(p).split('/').pop()!.toLowerCase())
-      .filter((file) => photosByFile.has(file));
+      .map((p) => photoPath(str(p)))
+      .filter((file) => photosByPath.has(file));
 
     vehicles.push({
       id: str(r.id) || slug,
@@ -149,15 +115,16 @@ async function build() {
       brandKey: slugify(brand),
       model,
       name,
-      title: `${year} ${name}`,
+      title,
       year,
       regYear,
       yearLabel: regYear ? `${year} · Reg. ${regYear}` : String(year),
       colour,
-      transmission: str(r.transmission).trim() || 'Ask our team',
+      label: colour ? `${title} (${colour})` : title,
+      transmission: str(r.transmission).trim() || detectTransmission(model) || ASK_OUR_TEAM,
       cashPriceRM: price(r.cashPriceRM),
       loanPriceRM: price(r.loanPriceRM),
-      photos: photoFiles.map((file) => photosByFile.get(file)!),
+      photos: photoFiles.map((file) => photosByPath.get(file)!),
       photoFiles,
       featured: r.featured === true,
       rank: 0,
