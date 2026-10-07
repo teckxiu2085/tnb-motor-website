@@ -1,0 +1,38 @@
+---
+// Grey · black · red bar taken from the logo. Used as divider / accent.
+interface Props {
+  class?: string;
+  thick?: boolean;
+}
+const { class: className, thick = false } = Astro.props;
+---
+
+<span class:list={['tribar', { 'tribar--thick': thick }, className]} aria-hidden="true">
+  <span></span><span></span><span></span>
+</span>
+
+<style>
+  .tribar {
+    display: flex;
+    gap: 3px;
+    height: 4px;
+    width: 120px;
+  }
+  .tribar--thick {
+    height: 6px;
+  }
+  .tribar > span {
+    flex: 1;
+  }
+  .tribar > span:nth-child(1) {
+    background: var(--grey);
+  }
+  .tribar > span:nth-child(2) {
+    background: #000;
+    /* keep the black segment visible on dark backgrounds */
+    box-shadow: inset 0 0 0 1px var(--line-strong);
+  }
+  .tribar > span:nth-child(3) {
+    background: var(--red);
+  }
+</style>

@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TriBar from '../components/TriBar.astro';
+import { getVehicles } from '../data/vehicles';
+import { withBase } from '../lib/url';
+
+const vehicles = await getVehicles();
+---
+
+<Layout
+  title="TnB MOTOR · Used & recond cars in Pasir Gudang, Johor"
+  description={`Browse ${vehicles.length} used and recond cars at TnB MOTOR, Pasir Gudang, Johor.`}
+  path="/"
+  current="home"
+>
+  <section class="section">
+    <div class="container" style="display:grid;gap:24px">
+      <p class="eyebrow">TnB MOTOR · Pasir Gudang</p>
+      <h1 class="display">Your next car<br />is here.</h1>
+      <TriBar />
+      <p class="lead">{vehicles.length} cars in stock.</p>
+      <p><a class="btn btn--light" href={withBase('cars/')}>Browse cars</a></p>
+    </div>
+  </section>
+</Layout>

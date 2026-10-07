@@ -1,0 +1,80 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FloatingWhatsApp from '../components/FloatingWhatsApp.astro';
+import { absoluteUrl, withBase } from '../lib/url';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Site-relative path of this page, e.g. "cars/" (used for the canonical URL). */
+  path: string;
+  /** Site-relative path of the share image (Open Graph). */
+  image?: string;
+  imageAlt?: string;
+  current?: 'home' | 'cars';
+  /** Pages with their own sticky contact bar hide the floating WhatsApp button. */
+  floatingWhatsApp?: boolean;
+  jsonLd?: Record<string, unknown>[];
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  path,
+  image = 'og/tnb-motor.jpg',
+  imageAlt = 'TnB MOTOR — Used Car Dealer, Pasir Gudang, Johor',
+  current,
+  floatingWhatsApp = true,
+  jsonLd = [],
+  noindex = false,
+} = Astro.props;
+
+const canonical = absoluteUrl(path, Astro.site);
+const ogImage = absoluteUrl(image, Astro.site);
+---
+
+<!doctype html>
+<html lang="en-MY">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <meta name="theme-color" content="#0b0b0c" />
+    <link rel="icon" href={withBase('brand/icon-32.png')} sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href={withBase('brand/icon-180.png')} />
+    <link rel="sitemap" href={withBase('sitemap.xml')} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="TnB MOTOR" />
+    <meta property="og:locale" content="en_MY" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <Font cssVariable="--font-display" preload />
+    <Font cssVariable="--font-mono" />
+
+    {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header current={current} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    {floatingWhatsApp && <FloatingWhatsApp />}
+  </body>
+</html>

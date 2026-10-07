@@ -60,5 +60,13 @@
     "Prices are on the road, excluding insurance.",
     "Loan price is the vehicle selling price, not a monthly instalment.",
     "Please confirm availability and vehicle condition with TnB MOTOR."
-  ]
+  ],
+  "whyTnb": [],
+  "_whyTnbNote": "TODO: only facts confirmed by TnB go here (one short sentence each). The 'Why TnB' section stays hidden while this list is empty.",
+  "loanEstimator": {
+    "_todo": "TODO: TnB to confirm these defaults. They are placeholders for the instalment estimate only (flat-rate hire purchase).",
+    "downPaymentPercent": 10,
+    "interestRatePercent": 3.5,
+    "tenureYears": 9
+  }
 }

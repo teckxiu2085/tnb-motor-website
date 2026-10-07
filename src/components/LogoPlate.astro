@@ -1,0 +1,45 @@
+---
+// The official logo is a white-background design: on dark areas it always sits on a white rounded plate.
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo-trimmed.png';
+
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+const { size = 'sm', class: className } = Astro.props;
+const heights = { sm: 34, md: 56, lg: 96 };
+const h = heights[size];
+---
+
+<span class:list={['logo-plate', `logo-plate--${size}`, className]}>
+  <Image
+    src={logo}
+    alt="TnB MOTOR — Used Car Dealer"
+    height={h}
+    width={Math.round((h * logo.width) / logo.height)}
+    densities={[1, 2, 3]}
+    format="png"
+    loading="eager"
+    decoding="async"
+  />
+</span>
+
+<style>
+  .logo-plate {
+    display: inline-flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 10px;
+    padding: 6px 10px;
+    line-height: 0;
+  }
+  .logo-plate--md {
+    border-radius: 14px;
+    padding: 10px 16px;
+  }
+  .logo-plate--lg {
+    border-radius: 18px;
+    padding: 16px 24px;
+  }
+</style>

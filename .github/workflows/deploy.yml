@@ -1,0 +1,55 @@
+name: Build & deploy website
+
+on:
+  # Every change merged into main goes live automatically.
+  push:
+    branches: [main]
+  # Pull requests are only built (checked), never deployed.
+  pull_request:
+  # Rebuild once a day (03:17 Malaysia time) — ready for the future Google Sheet stock list.
+  schedule:
+    - cron: '17 19 * * *'
+  # Manual "Run workflow" button in the Actions tab.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ASTRO_TELEMETRY_DISABLED: 1
+  # Optional, for later: Settings → Secrets and variables → Actions → Variables → INVENTORY_CSV_URL
+  # (published CSV of a Google Sheet with PUBLIC columns only).
+  INVENTORY_CSV_URL: ${{ vars.INVENTORY_CSV_URL }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -21,7 +21,7 @@
 
 - `content/inventory.json`：37 辆车的库存快照（2026-10-06）。`cashPriceRM` / `loanPriceRM` 为 `null` 时显示 "Ask for price"。年份像 `18/22` 表示 2018 年出厂、2022 年注册（recond 进口车）。
 - `content/company.json`：公司资料，`TODO` 的部分等老板给。
-- `public/cars/`：23 张车辆照片（竖图 1920×2560）。另外 14 辆还没有照片。
+- `src/assets/cars/`：23 张车辆照片（竖图 3:4，一部分 1920×2560、一部分 810×1080）。网站打包时自动转成 AVIF/WebP、按屏幕出不同尺寸。`inventory.json` 里的 `/cars/xxx.jpeg` 只按文件名对应到这里。另外 14 辆还没有照片。
 - `public/brand/logo.png`：官方 logo。
 
 ## 技术约定
