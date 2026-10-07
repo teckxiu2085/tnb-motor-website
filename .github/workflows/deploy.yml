@@ -37,7 +37,15 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Re-use already optimised car photos so builds stay fast.
+      - uses: actions/cache@v4
+        with:
+          path: .cache/astro
+          key: astro-images-${{ hashFiles('src/assets/**', 'astro.config.mjs', 'src/lib/image-service.ts', 'package-lock.json') }}
+          restore-keys: astro-images-
       - run: npm run build
+      # Fails the run if a link is broken, "TODO" text leaks into a page, or a car page lacks its WhatsApp link.
+      - run: npm run check
       - uses: actions/upload-pages-artifact@v4
         if: github.event_name != 'pull_request'
         with:

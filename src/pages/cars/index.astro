@@ -131,7 +131,7 @@ const itemList = {
     </p>
 
     <div class="results__grid" data-car-list>
-      {vehicles.map((car, i) => <CarCard car={car} headingLevel={2} eager={i < 2} filterData />)}
+      {vehicles.map((car, i) => <CarCard car={car} headingLevel={2} eager={i < 2} priority={i === 0} filterData />)}
     </div>
 
     <div class="results__ask" data-ask-notice hidden>

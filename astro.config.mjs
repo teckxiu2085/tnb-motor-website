@@ -1,4 +1,5 @@
 // @ts-check
+import { fileURLToPath } from 'node:url';
 import { defineConfig, fontProviders } from 'astro/config';
 
 const LATIN =
@@ -10,7 +11,24 @@ export default defineConfig({
   site: 'https://teckxiu2085.github.io',
   base: '/tnb-motor-website',
   trailingSlash: 'always',
-  build: { format: 'directory' },
+  // Optimised images are cached here between builds (GitHub Actions keeps this folder too).
+  cacheDir: './.cache/astro',
+  build: {
+    format: 'directory',
+    // Small sites load fastest with their CSS inside the page (no extra render-blocking request).
+    inlineStylesheets: 'always',
+  },
+  image: {
+    service: {
+      // Built-in sharp service + focal-point cropping for car cards (see src/lib/image-service.ts).
+      entrypoint: fileURLToPath(new URL('./src/lib/image-service.ts', import.meta.url)),
+      config: {
+        avif: { quality: 50 },
+        webp: { quality: 74 },
+        jpeg: { quality: 78, mozjpeg: true },
+      },
+    },
+  },
   // Fonts are self-hosted from the installed @fontsource packages (no Google Fonts requests, works offline).
   fonts: [
     {

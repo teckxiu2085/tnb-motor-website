@@ -102,10 +102,9 @@ const breadcrumbLd = {
                   widths={[480, 750, 1080, 1440]}
                   sizes="(min-width: 900px) 56vw, 100vw"
                   formats={['avif', 'webp']}
-                  quality={72}
-                  loading={i === 0 ? 'eager' : 'lazy'}
+                    loading={i === 0 ? 'eager' : 'lazy'}
                   fetchpriority={i === 0 ? 'high' : undefined}
-                  decoding={i === 0 ? 'sync' : 'async'}
+                  decoding="async"
                 />
               ))}
             </div>

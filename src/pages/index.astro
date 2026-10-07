@@ -77,10 +77,9 @@ const dealerLd: Record<string, unknown> = {
                 widths={[480, 750, 1080, 1440]}
                 sizes="(min-width: 900px) 46vw, 100vw"
                 formats={['avif', 'webp']}
-                quality={72}
                 loading="eager"
                 fetchpriority="high"
-                decoding="sync"
+                decoding="async"
                 class="hero__img"
               />
             </div>

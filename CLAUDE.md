@@ -20,7 +20,9 @@
 ## 资料
 
 - `content/inventory.json`：37 辆车的库存快照（2026-10-06）。`cashPriceRM` / `loanPriceRM` 为 `null` 时显示 "Ask for price"。年份像 `18/22` 表示 2018 年出厂、2022 年注册（recond 进口车）。
-- `content/company.json`：公司资料，`TODO` 的部分等老板给。
+- `content/company.json`：公司资料，`TODO` 的部分等老板给。其中：
+  - `whyTnb`：老板 2026-10-07 确认的事实（出车前 service、出车有 warranty、没有大撞、没有淹水）。warranty 年限 / 范围老板没给，不能写。
+  - `loanEstimator`：老板确认的月供规则（flat rate）。Bank 3.5%、Credit 7%；最长年数 = min(9, 上限 − 车龄)，上限 Bank 15、Credit 20；车龄 = 今年 − 出厂年；首付默认 10%。
 - `src/assets/cars/`：23 张车辆照片（竖图 3:4，一部分 1920×2560、一部分 810×1080）。网站打包时自动转成 AVIF/WebP、按屏幕出不同尺寸。`inventory.json` 里的 `/cars/xxx.jpeg` 只按文件名对应到这里。另外 14 辆还没有照片。
 - `public/brand/logo.png`：官方 logo。
 
@@ -29,3 +31,7 @@
 - 纯静态网站，部署到 GitHub Pages（GitHub Actions 自动部署）。不需要服务器、数据库。
 - 依赖越少越好；每次改完都要能 `npm run build` 成功。
 - 手机优先：大部分客人是从 TikTok、WhatsApp 点进来的。
+- 改完跑 `npm run build` 再跑 `npm run check`（检查坏链接、页面里漏出 "TODO"、每辆车都有 WhatsApp 按钮）。GitHub Actions 也会跑这两步。
+- 读库存只经过 `src/data/source.ts` → `src/data/vehicles.ts`；`vehicles.ts` 有公开栏位白名单，其他栏位一律丢掉。
+- 车卡照片在打包时按焦点（`50% 62%`）裁成 4:3（`src/lib/image-service.ts`），只是裁切和缩放。
+- 以后接实时库存（第 6 阶段）：定价规则和成本只放在老板自己 Google 账号里的 Apps Script，**不能放进这个仓库**；仓库只存公开快照（`content/inventory.json` + 照片）。

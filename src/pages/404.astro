@@ -1,0 +1,96 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CarCard from '../components/CarCard.astro';
+import Icon from '../components/Icon.astro';
+import TriBar from '../components/TriBar.astro';
+import { getVehicles } from '../data/vehicles';
+import { withBase } from '../lib/url';
+import { messages, waLink } from '../lib/whatsapp';
+
+const vehicles = await getVehicles();
+const picks = vehicles.filter((v) => v.photos.length && (v.cashPriceRM !== null || v.loanPriceRM !== null)).slice(0, 4);
+const wa = waLink(messages.general());
+---
+
+<Layout
+  title="Page not found | TnB MOTOR"
+  description="This page or car is no longer available at TnB MOTOR, Pasir Gudang."
+  path="404/"
+  noindex
+>
+  <section class="section">
+    <div class="container notfound">
+      <p class="eyebrow">404 · Not found</p>
+      <h1 class="display">This car may have<br />been sold.</h1>
+      <TriBar />
+      <p class="lead">
+        The page you opened is no longer here — the car may already have a new owner. Have a look at what is in stock now, or
+        WhatsApp us and tell us what you are looking for.
+      </p>
+      <div class="notfound__actions">
+        <a class="btn btn--light" href={withBase('cars/')}>
+          See all {vehicles.length} cars <Icon name="arrow" />
+        </a>
+        {
+          wa && (
+            <a class="btn btn--red" href={wa} target="_blank" rel="noopener">
+              <Icon name="whatsapp" /> WhatsApp us
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    picks.length > 0 && (
+      <section class="section notfound__picks" aria-labelledby="nf-picks">
+        <div class="container">
+          <h2 class="h2" id="nf-picks">
+            In stock now
+          </h2>
+          <div class="notfound__grid">
+            {picks.map((car) => (
+              <CarCard car={car} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Layout>
+
+<style>
+  .notfound {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+  }
+  .notfound .display {
+    font-size: clamp(2.3rem, 9vw, 4.4rem);
+  }
+  .notfound__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .notfound__picks {
+    border-top: 1px solid var(--line);
+  }
+  .notfound__grid {
+    display: grid;
+    gap: 18px;
+    margin-top: 28px;
+  }
+  @media (min-width: 640px) {
+    .notfound__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1100px) {
+    .notfound__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

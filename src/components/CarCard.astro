@@ -11,6 +11,8 @@ interface Props {
   car: Vehicle;
   headingLevel?: 2 | 3;
   eager?: boolean;
+  /** Only the single most important image on a page should get high fetch priority. */
+  priority?: boolean;
   sizes?: string;
   /** Extra attributes for filtering on the list page. */
   filterData?: boolean;
@@ -21,6 +23,7 @@ const {
   car,
   headingLevel = 3,
   eager = false,
+  priority = false,
   sizes = '(min-width: 1400px) 300px, (min-width: 1024px) 31vw, (min-width: 640px) 46vw, 92vw',
   filterData = false,
   class: className,
@@ -55,12 +58,15 @@ const data = filterData
         <Picture
           src={photo}
           alt={`${car.title} in ${car.colour}`}
+          width={960}
+          height={720}
           widths={[400, 640, 960]}
           sizes={sizes}
+          fit="cover"
+          position="50% 62%"
           formats={['avif', 'webp']}
-          quality={70}
           loading={eager ? 'eager' : 'lazy'}
-          fetchpriority={eager ? 'high' : undefined}
+          fetchpriority={priority ? 'high' : undefined}
           decoding="async"
         />
       ) : (
@@ -134,7 +140,6 @@ const data = filterData
   }
   .car-card__media :global(img) {
     object-fit: cover;
-    object-position: 50% 62%;
     transition: transform 0.9s var(--ease);
   }
   .car-card:hover .car-card__media :global(img) {
