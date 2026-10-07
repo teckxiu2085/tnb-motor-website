@@ -1,0 +1,112 @@
+---
+// Stands in for a photo when a car has none yet: a typographic "poster" — never a fake picture.
+import TriBar from './TriBar.astro';
+import type { Vehicle } from '../data/vehicles';
+
+interface Props {
+  car: Vehicle;
+  size?: 'card' | 'hero';
+}
+const { car, size = 'card' } = Astro.props;
+---
+
+<div class:list={['poster', `poster--${size}`]} role="img" aria-label={`${car.label} — photos available on request`}>
+  <span class="poster__mark" aria-hidden="true">{car.brand}</span>
+  <div class="poster__top">
+    <span class="poster__brand">{car.brand}</span>
+    <span class="poster__year mono">{car.year}</span>
+  </div>
+  <p class="poster__model" aria-hidden="true">{car.model}</p>
+  <p class="poster__note" aria-hidden="true">{[car.colour, 'Photos on request'].filter(Boolean).join(' · ')}</p>
+  <TriBar class="poster__bar" thick />
+</div>
+
+<style>
+  .poster {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 12px;
+    width: 100%;
+    height: 100%;
+    padding: 18px 20px 26px;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 90% 0%, rgb(255 255 255 / 0.07) 0%, transparent 55%),
+      linear-gradient(160deg, #1b1b1e 0%, #111113 55%, #0c0c0e 100%);
+    color: var(--white);
+  }
+  .poster__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .poster__brand {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.34em;
+    color: var(--grey);
+    white-space: nowrap;
+  }
+  /* oversized outlined brand wordmark in the background */
+  .poster__mark {
+    position: absolute;
+    left: -0.04em;
+    top: 26%;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(4rem, 30cqi, 9rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(245 245 247 / 0.09);
+    pointer-events: none;
+    user-select: none;
+  }
+  .poster__top,
+  .poster__model,
+  .poster__note {
+    position: relative;
+  }
+  .poster__year {
+    font-size: 0.85rem;
+    color: var(--grey);
+  }
+  .poster__model {
+    align-self: end;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.6rem, 8.5cqi, 2.6rem);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .poster__note {
+    font-size: 0.8rem;
+    color: var(--grey);
+  }
+  .poster :global(.poster__bar) {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+  }
+  .poster--hero {
+    padding: clamp(24px, 5vw, 48px) clamp(24px, 5vw, 48px) clamp(36px, 6vw, 56px);
+  }
+  .poster--hero .poster__brand {
+    font-size: 0.85rem;
+  }
+  .poster--hero .poster__model {
+    font-size: clamp(2.4rem, 11cqi, 4.5rem);
+  }
+</style>

@@ -1,0 +1,145 @@
+name: Build & deploy website
+
+on:
+  # Every change merged into main goes live automatically.
+  push:
+    branches: [main]
+  # Pull requests are only built (checked), never deployed.
+  pull_request:
+  schedule:
+    # Every hour: read the stock list from the Google Sheet; rebuild only when something changed.
+    - cron: '7 * * * *'
+    # Every day at 03:17 Malaysia time: always rebuild (car ages in the loan estimate follow the calendar).
+    - cron: '17 19 * * *'
+  # Manual "Run workflow" button in the Actions tab: update the stock and rebuild right away.
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '车数突然变化很大时也照样更新（确认 Google 表没问题才勾）'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ASTRO_TELEMETRY_DISABLED: 1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write # saves the updated stock snapshot (content/inventory.json)
+    outputs:
+      deploy: ${{ steps.decide.outputs.deploy }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      # Car photos from Google Drive are kept in the Actions cache, not in the repository.
+      - name: Restore car photos
+        uses: actions/cache/restore@v4
+        with:
+          path: src/assets/cars/live
+          key: live-photos-${{ github.run_id }}
+          restore-keys: live-photos-
+
+      # Reads the stock list through the private Apps Script in the Google Sheet (public fields only).
+      # Does nothing until the STOCK_API_URL and STOCK_API_TOKEN secrets are set. The log shows counts only.
+      # If it fails, the website keeps the last stock list. Only the daily run and manual runs turn red
+      # (so a problem is reported once a day, not every hour), and a failure never blocks a code change.
+      - name: Sync stock list from the Google Sheet
+        id: sync
+        if: github.event_name != 'pull_request'
+        continue-on-error: ${{ github.event_name == 'push' || github.event.schedule == '7 * * * *' }}
+        run: npm run sync
+        env:
+          STOCK_API_URL: ${{ secrets.STOCK_API_URL }}
+          STOCK_API_TOKEN: ${{ secrets.STOCK_API_TOKEN }}
+          SYNC_FORCE: ${{ inputs.force }}
+
+      - name: Save car photos
+        if: steps.sync.outputs.photos-changed == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: src/assets/cars/live
+          key: live-photos-${{ hashFiles('src/assets/cars/live/**') }}
+
+      - name: Decide whether to build
+        id: decide
+        env:
+          EVENT: ${{ github.event_name }}
+          SCHEDULE: ${{ github.event.schedule }}
+          CHANGED: ${{ steps.sync.outputs.changed }}
+        run: |
+          build=true
+          if [ "$EVENT" = schedule ] && [ "$SCHEDULE" = '7 * * * *' ] && [ "$CHANGED" != true ]; then
+            build=false
+            echo "库存没有变化，这次不用重新打包。"
+          fi
+          deploy=$build
+          if [ "$EVENT" = pull_request ]; then deploy=false; fi
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+          echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
+          echo "month=$(date -u +%Y-%m)" >> "$GITHUB_OUTPUT"
+
+      # Re-use already optimised car photos so builds stay fast. Starts fresh each month so it doesn't grow forever.
+      - uses: actions/cache@v4
+        if: steps.decide.outputs.build == 'true'
+        with:
+          path: .cache/astro
+          key: astro-images-${{ steps.decide.outputs.month }}-${{ hashFiles('src/assets/**', 'astro.config.mjs', 'src/lib/image-service.ts', 'package-lock.json') }}
+          restore-keys: astro-images-${{ steps.decide.outputs.month }}-
+      - run: npm run build
+        if: steps.decide.outputs.build == 'true'
+      # Fails the run if a link is broken, "TODO" text leaks into a page, a car page lacks its WhatsApp link,
+      # or the stock snapshot has a field that is not on the public list.
+      - run: npm run check
+        if: steps.decide.outputs.build == 'true'
+
+      # Only after the site built and passed the checks: keep the new stock snapshot in the repository.
+      - name: Save stock snapshot
+        if: steps.sync.outputs.changed == 'true'
+        env:
+          CARS: ${{ steps.sync.outputs.cars }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add content/inventory.json
+          git commit -m "Stock update: $CARS cars"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin "$BRANCH" && git push origin "HEAD:$BRANCH"; then exit 0; fi
+            sleep $((attempt * 10))
+          done
+          echo "::error::Could not save the stock snapshot."
+          exit 1
+
+      - uses: actions/upload-pages-artifact@v4
+        if: steps.decide.outputs.deploy == 'true'
+        with:
+          path: dist
+
+  deploy:
+    if: needs.build.outputs.deploy == 'true' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

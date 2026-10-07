@@ -1,0 +1,212 @@
+---
+import LogoPlate from './LogoPlate.astro';
+import TriBar from './TriBar.astro';
+import Icon from './Icon.astro';
+import { company, wazeUrl } from '../data/company';
+import { getSnapshotDate } from '../data/vehicles';
+import { withBase } from '../lib/url';
+import { waLink, messages } from '../lib/whatsapp';
+
+const wa = waLink(messages.general());
+const snapshot = await getSnapshotDate();
+const updated = snapshot
+  ? new Intl.DateTimeFormat('en-MY', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kuala_Lumpur' }).format(
+      new Date(snapshot),
+    )
+  : null;
+const socialLabels: Record<string, string> = {
+  tiktok: 'TikTok',
+  facebook: 'Facebook',
+  instagram: 'Instagram',
+  xiaohongshu: 'Xiaohongshu',
+};
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <LogoPlate size="md" />
+        <p class="site-footer__legal">{company.legalName}</p>
+        <p class="muted">{company.tagline} · {company.city}, {company.state}</p>
+      </div>
+
+      <div class="site-footer__cols">
+        <div>
+          <h2 class="eyebrow">Contact</h2>
+          <ul class="site-footer__list">
+            {
+              wa && (
+                <li>
+                  <a href={wa} target="_blank" rel="noopener">
+                    <Icon name="whatsapp" /> WhatsApp {company.phone}
+                  </a>
+                </li>
+              )
+            }
+            {
+              company.phoneE164 && (
+                <li>
+                  <a href={`tel:${company.phoneE164}`}>
+                    <Icon name="phone" /> Call {company.phone}
+                  </a>
+                </li>
+              )
+            }
+            {
+              company.openingHours && (
+                <li>
+                  <span>
+                    <Icon name="clock" /> {company.openingHours}
+                  </span>
+                </li>
+              )
+            }
+          </ul>
+        </div>
+
+        {
+          company.address && (
+            <div>
+              <h2 class="eyebrow">Visit</h2>
+              <address class="site-footer__address">{company.address}</address>
+              <ul class="site-footer__list">
+                {company.googleMapsUrl && (
+                  <li>
+                    <a href={company.googleMapsUrl} target="_blank" rel="noopener">
+                      <Icon name="map" /> Google Maps
+                    </a>
+                  </li>
+                )}
+                {wazeUrl && (
+                  <li>
+                    <a href={wazeUrl} target="_blank" rel="noopener">
+                      <Icon name="navigate" /> Waze
+                    </a>
+                  </li>
+                )}
+              </ul>
+            </div>
+          )
+        }
+
+        <div>
+          <h2 class="eyebrow">Explore</h2>
+          <ul class="site-footer__list">
+            <li><a href={withBase('cars/')}>All cars</a></li>
+            <li><a href={withBase('#sell')}>Sell or consign your car</a></li>
+            {company.team.length > 0 && <li><a href={withBase('#team')}>Our team</a></li>}
+            {
+              company.social.map((s) => (
+                <li>
+                  <a href={s.url} target="_blank" rel="noopener">
+                    {socialLabels[s.network] ?? s.network}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <TriBar class="site-footer__bar" />
+
+    <div class="site-footer__notes">
+      <ul>
+        {company.pricingNotes.map((note) => <li>{note}</li>)}
+      </ul>
+      <p>
+        © {year} {company.legalName}{updated && <> · Stock list updated {updated}</>}
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding-block: clamp(48px, 8vw, 88px) calc(32px + env(safe-area-inset-bottom));
+    background: #070708;
+    font-size: 0.95rem;
+  }
+  .site-footer__top {
+    display: grid;
+    gap: 40px;
+  }
+  .site-footer__brand {
+    display: grid;
+    justify-items: start;
+    gap: 10px;
+  }
+  .site-footer__legal {
+    margin-top: 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .site-footer__cols {
+    display: grid;
+    gap: 32px;
+  }
+  .site-footer__cols .eyebrow {
+    margin-bottom: 14px;
+  }
+  .site-footer__list {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .site-footer__list a,
+  .site-footer__list span {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    text-decoration: none;
+    color: var(--white);
+  }
+  .site-footer__list a:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .site-footer__list :global(.icon) {
+    width: 18px;
+    height: 18px;
+    color: var(--grey);
+    flex: none;
+  }
+  .site-footer__address {
+    font-style: normal;
+    color: var(--grey);
+    max-width: 22rem;
+    margin-bottom: 8px;
+  }
+  .site-footer :global(.site-footer__bar) {
+    margin-block: 40px 24px;
+  }
+  .site-footer__notes {
+    display: grid;
+    gap: 14px;
+    color: var(--grey);
+    font-size: 0.85rem;
+  }
+  .site-footer__notes ul {
+    margin: 0;
+    padding-left: 1.1em;
+    display: grid;
+    gap: 4px;
+  }
+  @media (min-width: 900px) {
+    .site-footer__top {
+      grid-template-columns: 1fr 2fr;
+    }
+    .site-footer__cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

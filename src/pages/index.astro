@@ -1,0 +1,799 @@
+---
+import { Picture } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import CarCard from '../components/CarCard.astro';
+import Icon from '../components/Icon.astro';
+import TnbStandard from '../components/TnbStandard.astro';
+import TriBar from '../components/TriBar.astro';
+import { getBrands, getVehicles } from '../data/vehicles';
+import { company, wazeUrl } from '../data/company';
+import { BUDGETS } from '../lib/filters';
+import { ASK_FOR_PRICE, formatRM } from '../lib/format';
+import { absoluteUrl, carPath, withBase } from '../lib/url';
+import { messages, waLink } from '../lib/whatsapp';
+
+const vehicles = await getVehicles();
+const brands = await getBrands();
+const hero = vehicles.find((v) => v.featured && v.photos.length) ?? vehicles.find((v) => v.photos.length);
+const picks = vehicles
+  .filter((v) => v !== hero && v.photos.length && (v.cashPriceRM !== null || v.loanPriceRM !== null))
+  .slice(0, 8);
+const heroPrice = hero ? (formatRM(hero.cashPriceRM) ?? formatRM(hero.loanPriceRM) ?? ASK_FOR_PRICE) : null;
+const rm = new Intl.NumberFormat('en-MY');
+
+const waGeneral = waLink(messages.general());
+const waSell = waLink(messages.sell());
+const searchData = JSON.stringify(vehicles.map((v) => [v.brandKey, v.cashPriceRM]));
+
+// AutoDealer structured data — only fields TnB has provided.
+const addressMatch = company.address?.match(/^(.*?),\s*(\d{5})\s+([^,]+),\s*(.+)$/);
+const dealerLd: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'AutoDealer',
+  name: company.brandName,
+  legalName: company.legalName,
+  url: absoluteUrl('/', Astro.site),
+  logo: absoluteUrl('brand/logo.png', Astro.site),
+  image: absoluteUrl('og/tnb-motor.jpg', Astro.site),
+  ...(company.phoneE164 ? { telephone: company.phoneE164 } : {}),
+  ...(company.address
+    ? {
+        address: addressMatch
+          ? {
+              '@type': 'PostalAddress',
+              streetAddress: addressMatch[1],
+              postalCode: addressMatch[2],
+              addressLocality: addressMatch[3],
+              addressRegion: addressMatch[4],
+              addressCountry: 'MY',
+            }
+          : { '@type': 'PostalAddress', streetAddress: company.address, addressCountry: 'MY' },
+      }
+    : {}),
+  ...(company.geo ? { geo: { '@type': 'GeoCoordinates', latitude: company.geo.lat, longitude: company.geo.lng } } : {}),
+  ...(company.openingHoursSchema ? { openingHours: company.openingHoursSchema } : {}),
+  ...(company.googleMapsUrl ? { hasMap: company.googleMapsUrl } : {}),
+  ...(company.social.length ? { sameAs: company.social.map((s) => s.url) } : {}),
+};
+---
+
+<Layout
+  title="TnB MOTOR · Used & recond cars in Pasir Gudang, Johor"
+  description={`Good cars, ready to drive. Every TnB MOTOR car is serviced before delivery and comes with warranty. Browse ${vehicles.length} used & recond cars in Pasir Gudang, Johor and WhatsApp us in one tap.`}
+  path="/"
+  current="home"
+  jsonLd={[dealerLd]}
+>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__inner">
+      {
+        hero && (
+          <a class="hero__media" href={withBase(carPath(hero.slug))} aria-label={`Featured: ${hero.title}`} tabindex="-1">
+            <div class="hero__frame" style={`view-transition-name: car-${hero.slug}`}>
+              <Picture
+                src={hero.photos[0]}
+                alt={hero.colour ? `${hero.title} in ${hero.colour}` : hero.title}
+                widths={[480, 750, 1080, 1440]}
+                sizes="(min-width: 900px) 46vw, 100vw"
+                formats={['avif']}
+                fallbackFormat="webp"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+                class="hero__img"
+              />
+            </div>
+          </a>
+        )
+      }
+      <div class="hero__copy">
+        {
+          hero && (
+            <a class="hero__featured" href={withBase(carPath(hero.slug))}>
+              <span class="eyebrow">Featured</span>
+              <span class="hero__featured-name">
+                {hero.title} · {heroPrice}
+              </span>
+              <Icon name="arrow" />
+            </a>
+          )
+        }
+        <h1 class="display hero__title">Good cars,<br />ready to drive.</h1>
+        <TriBar class="hero__bar" />
+        <p class="lead hero__lead">
+          Every {company.brandName} car is fully serviced before delivery and comes with warranty.{' '}
+          <span class="nowrap">Used &amp; recond cars in {company.city}, {company.state}.</span>
+        </p>
+        <div class="hero__actions">
+          {
+            waGeneral && (
+              <a class="btn btn--red" href={waGeneral} target="_blank" rel="noopener">
+                <Icon name="whatsapp" />
+                WhatsApp us
+              </a>
+            )
+          }
+          <a class="btn btn--outline" href={withBase('cars/')}>
+            Browse cars
+            <Icon name="arrow" />
+          </a>
+        </div>
+        <p class="hero__facts mono">
+          <span>{vehicles.length} cars in stock</span>
+          {company.openingHours && <span>{company.openingHours}</span>}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick search -->
+  <section class="quick container" aria-labelledby="quick-title">
+    <form class="quick__card reveal" action={withBase('cars/')} method="get" data-quick data-cars={searchData}>
+      <h2 class="quick__title" id="quick-title">Find your car</h2>
+      <div class="quick__fields">
+        <label class="field">
+          <span class="field__label">Brand</span>
+          <select class="control" name="brand" data-quick-brand>
+            <option value="">All brands</option>
+            {brands.map((b) => <option value={b.key}>{b.label}</option>)}
+          </select>
+        </label>
+        <label class="field">
+          <span class="field__label">Cash budget</span>
+          <select class="control" name="max" data-quick-max>
+            <option value="">Any budget</option>
+            {BUDGETS.map((b) => <option value={b}>Up to RM {rm.format(b)}</option>)}
+          </select>
+        </label>
+      </div>
+      <button class="btn btn--red quick__submit" type="submit">
+        <span>Show <span class="mono" data-quick-count>{vehicles.length}</span> cars</span>
+        <Icon name="arrow" />
+      </button>
+    </form>
+  </section>
+
+  <!-- Picks -->
+  {
+    picks.length > 0 && (
+      <section class="section picks" aria-labelledby="picks-title">
+        <div class="container">
+          <div class="section-head section-head--row reveal">
+            <div>
+              <p class="eyebrow">In stock now</p>
+              <h2 class="h2" id="picks-title">
+                Ready when you are
+              </h2>
+            </div>
+            <a class="text-link picks__all" href={withBase('cars/')}>
+              All {vehicles.length} cars <Icon name="arrow" />
+            </a>
+          </div>
+        </div>
+        <div class="picks__rail">
+          {picks.map((car) => (
+            <CarCard car={car} class="picks__card" sizes="(min-width: 1100px) 22vw, (min-width: 640px) 40vw, 78vw" />
+          ))}
+          <a class="picks__more" href={withBase('cars/')}>
+            <span class="h3">View all {vehicles.length} cars</span>
+            <Icon name="arrow" />
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- The TnB Standard -->
+  {
+    company.whyTnb.length > 0 && (
+      <section class="section standard-section" aria-labelledby="standard-title">
+        <div class="container">
+          <div class="section-head reveal">
+            <p class="eyebrow">Why TnB MOTOR</p>
+            <h2 class="h2" id="standard-title">
+              The TnB Standard
+            </h2>
+            <p class="lead">Every car we sell meets it.</p>
+          </div>
+          <TnbStandard />
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Sell / consign -->
+  <section class="section section--light sell" id="sell" aria-labelledby="sell-title">
+    <div class="container sell__inner">
+      <div class="sell__copy reveal">
+        <p class="eyebrow">Sell or consign</p>
+        <h2 class="h2" id="sell-title">Selling your car?</h2>
+        <p class="lead">
+          We buy used cars and help you sell through consignment. Send us your car's model, year and a few photos on WhatsApp.
+        </p>
+      </div>
+      {
+        waSell && (
+          <a class="btn btn--red sell__cta reveal" href={waSell} target="_blank" rel="noopener">
+            <Icon name="whatsapp" />
+            WhatsApp us to sell
+          </a>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Team -->
+  {
+    company.team.length > 0 && (
+      <section class="section team" id="team" aria-labelledby="team-title">
+        <div class="container">
+          <div class="section-head section-head--row reveal">
+            <div>
+              <p class="eyebrow">Our team</p>
+              <h2 class="h2" id="team-title">
+                Talk to a real person
+              </h2>
+            </div>
+            {waGeneral && (
+              <a class="btn btn--red team__main" href={waGeneral} target="_blank" rel="noopener">
+                <Icon name="whatsapp" />
+                WhatsApp our team
+              </a>
+            )}
+          </div>
+          <ul class="team__grid">
+            {company.team.map((m) => {
+              const wa = waLink(messages.team(m.name));
+              return (
+                <li class="member reveal">
+                  <span class="member__avatar" aria-hidden="true">
+                    {m.initial}
+                  </span>
+                  <div class="member__info">
+                    <p class="member__name">{m.name}</p>
+                    {m.role && <p class="member__role">{m.role}</p>}
+                    {m.languages.length > 0 && <p class="member__lang mono">{m.languages.join(' · ')}</p>}
+                  </div>
+                  {wa && (
+                    <a class="member__wa" href={wa} target="_blank" rel="noopener" aria-label={`WhatsApp TnB MOTOR to speak with ${m.name}`}>
+                      <Icon name="whatsapp" />
+                    </a>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Visit -->
+  {
+    company.address && (
+      <section class="section visit" id="visit" aria-labelledby="visit-title">
+        <div class="container visit__inner">
+          <div class="visit__copy reveal">
+            <p class="eyebrow">Visit us</p>
+            <h2 class="h2" id="visit-title">
+              Come see the cars
+            </h2>
+            <address class="visit__address">
+              <Icon name="pin" />
+              <span>{company.address}</span>
+            </address>
+            {company.openingHours && (
+              <p class="visit__line">
+                <Icon name="clock" />
+                <span>{company.openingHours}</span>
+              </p>
+            )}
+            {company.phoneE164 && (
+              <p class="visit__line">
+                <Icon name="phone" />
+                <a href={`tel:${company.phoneE164}`}>{company.phone}</a>
+              </p>
+            )}
+          </div>
+          <div class="visit__card reveal">
+            <span class="visit__pin" aria-hidden="true">
+              <Icon name="pin" />
+            </span>
+            <p class="visit__place">{company.legalName}</p>
+            {company.geo && (
+              <p class="visit__coords mono">
+                {company.geo.lat.toFixed(4)}° N · {company.geo.lng.toFixed(4)}° E
+              </p>
+            )}
+            <div class="visit__actions">
+              {company.googleMapsUrl && (
+                <a class="btn btn--light" href={company.googleMapsUrl} target="_blank" rel="noopener">
+                  <Icon name="map" />
+                  Open in Google Maps
+                </a>
+              )}
+              {wazeUrl && (
+                <a class="btn btn--outline" href={wazeUrl} target="_blank" rel="noopener">
+                  <Icon name="navigate" />
+                  Navigate with Waze
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Layout>
+
+<script>
+  // Live "Show N cars" count for the quick search (same rules as the car list filters).
+  const form = document.querySelector<HTMLFormElement>('[data-quick]');
+  if (form) {
+    const cars = JSON.parse(form.dataset.cars ?? '[]') as [string, number | null][];
+    const brand = form.querySelector<HTMLSelectElement>('[data-quick-brand]')!;
+    const max = form.querySelector<HTMLSelectElement>('[data-quick-max]')!;
+    const count = form.querySelector('[data-quick-count]')!;
+    const update = () => {
+      const b = brand.value;
+      const m = Number(max.value) || 0;
+      count.textContent = String(cars.filter(([key, price]) => (!b || key === b) && (!m || (price !== null && price <= m))).length);
+    };
+    form.addEventListener('change', update);
+    // Do not send empty fields, so the shared link stays clean.
+    form.addEventListener('submit', () => {
+      for (const el of [brand, max]) el.disabled = !el.value;
+      setTimeout(() => [brand, max].forEach((el) => (el.disabled = false)), 0);
+    });
+    update();
+  }
+</script>
+
+<style>
+  /* Hero */
+  .hero {
+    position: relative;
+    overflow: hidden;
+  }
+  .hero__inner {
+    display: grid;
+  }
+  .hero__media {
+    display: block;
+    position: relative;
+  }
+  .hero__frame {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: #0e0e10;
+  }
+  .hero__frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 62%, var(--black) 100%);
+    pointer-events: none;
+  }
+  .hero__frame :global(picture),
+  .hero__frame :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+  .hero__frame :global(img) {
+    object-fit: cover;
+    object-position: 50% 100%;
+  }
+  .hero__copy {
+    position: relative;
+    display: grid;
+    gap: 18px;
+    width: min(100% - 2 * var(--gutter), 620px);
+    margin: -28px auto 0;
+    padding-bottom: clamp(32px, 6vw, 56px);
+  }
+  .hero__featured {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    justify-self: start;
+    text-decoration: none;
+    font-size: 0.85rem;
+  }
+  .hero__featured .eyebrow {
+    color: var(--red-on-dark);
+  }
+  .hero__featured-name {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--white);
+  }
+  .hero__featured :global(.icon) {
+    width: 16px;
+    height: 16px;
+    color: var(--grey);
+    transition: transform 0.3s var(--ease);
+  }
+  .hero__featured:hover :global(.icon) {
+    transform: translateX(4px);
+  }
+  .hero__title {
+    font-size: clamp(2.6rem, 11.5vw, 5.4rem);
+  }
+  .nowrap {
+    white-space: nowrap;
+  }
+  @media (max-width: 420px) {
+    .nowrap {
+      white-space: normal;
+    }
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .hero__actions .btn {
+    flex: 1 1 160px;
+  }
+  .hero__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin-top: 4px;
+    font-size: 0.8rem;
+    color: var(--grey);
+  }
+  .hero__facts span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero__facts span::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .hero__frame :global(img) {
+        animation: hero-drift linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 100%;
+      }
+    }
+  }
+  @keyframes hero-drift {
+    to {
+      transform: translateY(14%) scale(1.06);
+    }
+  }
+  @media (min-width: 900px) {
+    .hero__inner {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      align-items: center;
+      gap: clamp(32px, 5vw, 80px);
+      width: min(100% - 2 * var(--gutter), var(--maxw));
+      margin-inline: auto;
+      padding-block: clamp(32px, 5vw, 64px);
+      min-height: calc(100svh - var(--header-h));
+    }
+    .hero__media {
+      order: 2;
+    }
+    .hero__frame {
+      aspect-ratio: 3 / 4;
+      max-height: calc(100svh - var(--header-h) - 96px);
+      border-radius: 22px;
+      margin-left: auto;
+    }
+    .hero__frame::after {
+      display: none;
+    }
+    .hero__copy {
+      margin: 0;
+      width: auto;
+      padding: 0;
+    }
+    .hero__title {
+      font-size: clamp(3rem, 4.9vw, 4.6rem);
+    }
+    .hero__actions .btn {
+      flex: 0 0 auto;
+    }
+  }
+
+  /* Quick search */
+  .quick {
+    position: relative;
+    z-index: 2;
+  }
+  .quick__card {
+    display: grid;
+    gap: 16px;
+    padding: clamp(20px, 4vw, 32px);
+    border: 1px solid var(--line-strong);
+    border-radius: 22px;
+    background:
+      radial-gradient(120% 120% at 100% 0%, rgb(227 11 7 / 0.12) 0%, transparent 45%),
+      var(--surface);
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.45);
+  }
+  .quick__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.35rem;
+  }
+  .quick__fields {
+    display: grid;
+    gap: 12px;
+  }
+  .quick__submit {
+    width: 100%;
+  }
+  @media (min-width: 760px) {
+    .quick__card {
+      grid-template-columns: auto 1fr auto;
+      align-items: end;
+      gap: 24px;
+    }
+    .quick__title {
+      align-self: center;
+    }
+    .quick__fields {
+      grid-template-columns: 1fr 1fr;
+    }
+    .quick__submit {
+      width: auto;
+      min-height: 50px;
+    }
+  }
+
+  /* Picks rail */
+  .picks__rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(78%, 340px);
+    gap: 14px;
+    overflow-x: auto;
+    padding: 4px var(--gutter) 18px;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+  .picks__rail > :global(*) {
+    scroll-snap-align: start;
+  }
+  .picks__more {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 14px;
+    padding: 28px;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: border-color 0.3s ease;
+  }
+  .picks__more:hover {
+    border-color: var(--white);
+  }
+  .picks__more :global(.icon) {
+    width: 28px;
+    height: 28px;
+  }
+  @media (min-width: 1100px) {
+    .picks__more {
+      display: none;
+    }
+    .picks__rail {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      width: min(100% - 2 * var(--gutter), var(--maxw));
+      margin-inline: auto;
+      padding: 4px 0 0;
+      overflow: visible;
+      gap: 22px;
+    }
+  }
+
+  /* TnB Standard */
+  .standard-section {
+    border-top: 1px solid var(--line);
+  }
+
+  /* Sell */
+  .sell__inner {
+    display: grid;
+    gap: 28px;
+    align-items: end;
+  }
+  .sell__copy {
+    display: grid;
+    gap: 16px;
+  }
+  .sell__cta {
+    justify-self: start;
+  }
+  @media (min-width: 900px) {
+    .sell__inner {
+      grid-template-columns: 1fr auto;
+    }
+  }
+
+  /* Team */
+  .team__main {
+    justify-self: start;
+  }
+  .team .section-head--row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .team__grid {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .member {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .member__avatar {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background:
+      linear-gradient(var(--surface-2), var(--surface-2)) padding-box,
+      linear-gradient(135deg, var(--grey), #000 50%, var(--red)) border-box;
+    border: 2px solid transparent;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+  }
+  .member__info {
+    flex: 1;
+    min-width: 0;
+  }
+  .member__name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .member__role {
+    color: var(--grey);
+    font-size: 0.92rem;
+  }
+  .member__lang {
+    margin-top: 2px;
+    color: var(--grey);
+    font-size: 0.78rem;
+  }
+  .member__wa {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    color: var(--white);
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease;
+  }
+  .member__wa:hover {
+    background: var(--red);
+    border-color: var(--red);
+  }
+  @media (min-width: 760px) {
+    .team .section-head--row {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+    .team__grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+  }
+
+  /* Visit */
+  .visit {
+    border-top: 1px solid var(--line);
+  }
+  .visit__inner {
+    display: grid;
+    gap: 32px;
+  }
+  .visit__copy {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+  }
+  .visit__address,
+  .visit__line {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-style: normal;
+    font-size: 1.05rem;
+    color: var(--white);
+  }
+  .visit__address :global(.icon),
+  .visit__line :global(.icon) {
+    margin-top: 3px;
+    color: var(--grey);
+  }
+  .visit__line a {
+    text-decoration: none;
+  }
+  .visit__line a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .visit__card {
+    position: relative;
+    display: grid;
+    gap: 10px;
+    padding: clamp(24px, 4vw, 36px);
+    border: 1px solid var(--line-strong);
+    border-radius: 22px;
+    background:
+      repeating-linear-gradient(0deg, rgb(255 255 255 / 0.035) 0 1px, transparent 1px 32px),
+      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.035) 0 1px, transparent 1px 32px),
+      radial-gradient(80% 80% at 30% 20%, #1f1f23 0%, var(--surface) 70%);
+    overflow: hidden;
+  }
+  .visit__pin {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 0 0 10px rgb(227 11 7 / 0.15);
+  }
+  .visit__pin :global(.icon) {
+    width: 28px;
+    height: 28px;
+  }
+  .visit__place {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+  }
+  .visit__coords {
+    color: var(--grey);
+    font-size: 0.85rem;
+  }
+  .visit__actions {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  @media (min-width: 900px) {
+    .visit__inner {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 64px;
+    }
+  }
+</style>

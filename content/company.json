@@ -60,5 +60,21 @@
     "Prices are on the road, excluding insurance.",
     "Loan price is the vehicle selling price, not a monthly instalment.",
     "Please confirm availability and vehicle condition with TnB MOTOR."
-  ]
+  ],
+  "_whyTnbNote": "Facts confirmed by TnB (2026-10-07): every car is serviced before delivery, comes with warranty, no major accident, no flood damage. Warranty length/coverage not given yet, so it is not stated. Only add items TnB confirms.",
+  "whyTnb": [
+    { "icon": "service", "title": "Fully serviced", "text": "Every car is serviced before you drive it home." },
+    { "icon": "warranty", "title": "Warranty included", "text": "Every car comes with warranty on delivery." },
+    { "icon": "accident", "title": "No major accidents", "text": "We don't sell cars with major accident damage." },
+    { "icon": "flood", "title": "No flood cars", "text": "We don't sell flood-damaged cars." }
+  ],
+  "loanEstimator": {
+    "_note": "Rules confirmed by TnB (2026-10-07). Flat-rate hire purchase. Car age = current year - year of manufacture (recond cars too). Max loan period = min(maxTenureYears, maxCarAgePlusTenure - car age).",
+    "downPaymentPercent": 10,
+    "maxTenureYears": 9,
+    "options": [
+      { "id": "bank", "label": "Bank", "interestRatePercent": 3.5, "maxCarAgePlusTenure": 15 },
+      { "id": "credit", "label": "Credit", "interestRatePercent": 7, "maxCarAgePlusTenure": 20 }
+    ]
+  }
 }

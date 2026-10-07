@@ -1,0 +1,108 @@
+---
+import LogoPlate from './LogoPlate.astro';
+import Icon from './Icon.astro';
+import { withBase } from '../lib/url';
+import { waLink, messages } from '../lib/whatsapp';
+import { company } from '../data/company';
+
+interface Props {
+  current?: 'home' | 'cars';
+}
+const { current } = Astro.props;
+const wa = waLink(messages.general());
+const showVisit = Boolean(company.address);
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href={withBase('/')} class="site-header__logo" aria-label="TnB MOTOR home">
+      <LogoPlate size="sm" />
+    </a>
+    <nav aria-label="Main">
+      <ul class="site-nav">
+        <li><a href={withBase('cars/')} aria-current={current === 'cars' ? 'page' : undefined}>Cars</a></li>
+        <li><a href={withBase('#sell')}>Sell</a></li>
+        {showVisit && <li><a href={withBase('#visit')}>Visit</a></li>}
+        {
+          wa && (
+            <li class="site-nav__wa">
+              <a class="btn btn--red btn--sm" href={wa} target="_blank" rel="noopener">
+                <Icon name="whatsapp" />
+                WhatsApp us
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: var(--header-h);
+    background: rgb(11 11 12 / 0.78);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border-bottom: 1px solid var(--line);
+    view-transition-name: site-header;
+  }
+  .site-header__inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .site-header__logo {
+    display: inline-flex;
+    border-radius: 10px;
+  }
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 3vw, 32px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .site-nav a:not(.btn) {
+    position: relative;
+    display: inline-block;
+    padding: 10px 2px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--white);
+  }
+  .site-nav a:not(.btn)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 4px;
+    height: 2px;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s var(--ease);
+  }
+  .site-nav a:not(.btn):hover::after,
+  .site-nav a[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+  .site-nav__wa {
+    display: none;
+  }
+  @media (min-width: 900px) {
+    .site-nav__wa {
+      display: block;
+    }
+  }
+</style>

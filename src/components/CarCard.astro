@@ -1,0 +1,224 @@
+---
+import { Picture } from 'astro:assets';
+import NoPhotoPoster from './NoPhotoPoster.astro';
+import Icon from './Icon.astro';
+import type { Vehicle } from '../data/vehicles';
+import { ASK_FOR_PRICE, formatRM } from '../lib/format';
+import { absoluteUrl, carPath, withBase } from '../lib/url';
+import { messages, waLink } from '../lib/whatsapp';
+
+interface Props {
+  car: Vehicle;
+  headingLevel?: 2 | 3;
+  eager?: boolean;
+  /** Only the single most important image on a page should get high fetch priority. */
+  priority?: boolean;
+  sizes?: string;
+  /** Extra attributes for filtering on the list page. */
+  filterData?: boolean;
+  class?: string;
+}
+
+const {
+  car,
+  headingLevel = 3,
+  eager = false,
+  priority = false,
+  sizes = '(min-width: 1400px) 300px, (min-width: 1024px) 31vw, (min-width: 640px) 46vw, 92vw',
+  filterData = false,
+  class: className,
+} = Astro.props;
+
+const Heading = headingLevel === 2 ? 'h2' : 'h3';
+const href = withBase(carPath(car.slug));
+const photo = car.photos[0];
+const cash = formatRM(car.cashPriceRM);
+const loan = formatRM(car.loanPriceRM);
+const photosWa = photo ? null : waLink(messages.photos(car, absoluteUrl(carPath(car.slug), Astro.site)));
+const transmission = car.transmission === 'Automatic' ? 'Auto' : car.transmission;
+
+const data = filterData
+  ? {
+      'data-car': '',
+      'data-brand': car.brandKey,
+      'data-year': car.year,
+      'data-price': car.cashPriceRM ?? '',
+      'data-rank': car.rank,
+      'data-search': [car.brand, car.model, car.colour, car.year, car.regYear ?? '', car.transmission]
+        .join(' ')
+        .toLowerCase(),
+    }
+  : {};
+---
+
+<article class:list={['car-card', 'tri-hover', className]} {...data}>
+  <div class="car-card__media" style={`view-transition-name: car-${car.slug}`}>
+    {
+      photo ? (
+        <Picture
+          src={photo}
+          alt={car.colour ? `${car.title} in ${car.colour}` : car.title}
+          width={960}
+          height={720}
+          widths={[400, 640, 960]}
+          sizes={sizes}
+          fit="cover"
+          position="50% 62%"
+          formats={['avif']}
+          fallbackFormat="webp"
+          loading={eager ? 'eager' : 'lazy'}
+          fetchpriority={priority ? 'high' : undefined}
+          decoding="async"
+        />
+      ) : (
+        <NoPhotoPoster car={car} />
+      )
+    }
+  </div>
+  <div class="car-card__body">
+    <p class="car-card__brand">{car.brand}</p>
+    <Heading class="car-card__model">
+      <a href={href} class="car-card__link">{car.model}</a>
+    </Heading>
+    <p class="car-card__meta mono">{[car.yearLabel, car.colour, transmission].filter(Boolean).join(' · ')}</p>
+    {
+      cash || loan ? (
+        <dl class="car-card__prices">
+          <div>
+            <dt>Cash</dt>
+            <dd class="mono">{cash ?? ASK_FOR_PRICE}</dd>
+          </div>
+          <div>
+            <dt>Loan</dt>
+            <dd class="mono">{loan ?? ASK_FOR_PRICE}</dd>
+          </div>
+        </dl>
+      ) : (
+        <p class="car-card__ask mono">{ASK_FOR_PRICE}</p>
+      )
+    }
+    {
+      photosWa && (
+        <a class="btn btn--outline btn--sm car-card__cta" href={photosWa} target="_blank" rel="noopener">
+          <Icon name="camera" />
+          Request photos on WhatsApp
+        </a>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .car-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition:
+      border-color 0.3s ease,
+      transform 0.45s var(--ease);
+  }
+  .car-card:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-3px);
+  }
+  .car-card[hidden] {
+    display: none;
+  }
+  .car-card__media {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #0e0e10;
+    container-type: inline-size;
+  }
+  .car-card__media :global(picture),
+  .car-card__media :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+  .car-card__media :global(img) {
+    object-fit: cover;
+    transition: transform 0.9s var(--ease);
+  }
+  .car-card:hover .car-card__media :global(img) {
+    transform: scale(1.035);
+  }
+  .car-card__body {
+    display: grid;
+    gap: 6px;
+    padding: 16px 18px 20px;
+  }
+  .car-card__brand {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+  .car-card__model {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  .car-card__link {
+    text-decoration: none;
+  }
+  /* whole card is clickable */
+  .car-card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .car-card__link:focus-visible {
+    outline: none;
+  }
+  .car-card:has(.car-card__link:focus-visible) {
+    outline: 2px solid var(--white);
+    outline-offset: 3px;
+  }
+  .car-card__meta {
+    font-size: 0.8rem;
+    color: var(--grey);
+  }
+  .car-card__prices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 10px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+  .car-card__prices dt {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+  .car-card__prices dd {
+    margin: 2px 0 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .car-card__ask {
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  .car-card__cta {
+    position: relative;
+    z-index: 2;
+    margin-top: 12px;
+    justify-self: start;
+  }
+</style>

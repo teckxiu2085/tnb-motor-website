@@ -1,0 +1,469 @@
+/* ==========================================================================
+   TnB MOTOR — design tokens (from the company brand guide)
+   ========================================================================== */
+:root {
+  --red: #e30b07; /* brand red: accents, buttons */
+  --red-on-dark: #ff453a; /* small red text on dark backgrounds */
+  --grey: #a8a8a8; /* brand grey */
+  --black: #0b0b0c; /* background */
+  --white: #f5f5f7; /* text */
+
+  --surface: #141416;
+  --surface-2: #1c1c1f;
+  --line: rgb(245 245 247 / 0.12);
+  --line-strong: rgb(245 245 247 / 0.24);
+  --ink-on-light: #0b0b0c;
+  --muted-on-light: #55555a;
+
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --radius: 16px;
+  --radius-sm: 12px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --maxw: 1240px;
+  --header-h: 64px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + 12px);
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+img,
+svg,
+picture {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.icon {
+  width: 1.25em;
+  height: 1.25em;
+  flex: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+}
+
+.section--light :focus-visible {
+  outline-color: var(--ink-on-light);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--black);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+/* ==========================================================================
+   Layout & type
+   ========================================================================== */
+.container {
+  width: min(100% - 2 * var(--gutter), var(--maxw));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: clamp(56px, 10vw, 120px);
+}
+
+.section--light {
+  background: var(--white);
+  color: var(--ink-on-light);
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.section--light .eyebrow {
+  color: var(--muted-on-light);
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 9vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 6vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.lead {
+  font-size: clamp(1.05rem, 2.6vw, 1.25rem);
+  color: var(--grey);
+  max-width: 38rem;
+}
+
+.section--light .lead {
+  color: var(--muted-on-light);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--grey);
+}
+
+.section-head {
+  display: grid;
+  gap: 14px;
+  margin-bottom: clamp(28px, 5vw, 48px);
+}
+
+.section-head--row {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+}
+
+/* ==========================================================================
+   Buttons & links
+   ========================================================================== */
+.btn {
+  --btn-bg: transparent;
+  --btn-fg: var(--white);
+  --btn-border: var(--line-strong);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 24px;
+  border: 1px solid var(--btn-border);
+  border-radius: 999px;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.btn--red {
+  --btn-bg: var(--red);
+  --btn-fg: #fff;
+  --btn-border: var(--red);
+}
+
+.btn--red:hover {
+  --btn-bg: #f2140f;
+  --btn-border: #f2140f;
+}
+
+.btn--outline:hover {
+  --btn-border: var(--white);
+}
+
+.btn--light {
+  --btn-bg: var(--white);
+  --btn-fg: var(--black);
+  --btn-border: var(--white);
+}
+
+.btn--light:hover {
+  --btn-bg: #fff;
+}
+
+.section--light .btn--outline {
+  --btn-fg: var(--ink-on-light);
+  --btn-border: rgb(11 11 12 / 0.25);
+}
+
+.section--light .btn--outline:hover {
+  --btn-border: var(--ink-on-light);
+}
+
+.btn--sm {
+  min-height: 44px;
+  padding: 0 18px;
+  font-size: 0.875rem;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.text-link svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s var(--ease);
+}
+
+.text-link:hover svg {
+  transform: translateX(4px);
+}
+
+/* Tri-colour line (grey · black · red, from the logo) that slides in on hover/focus. */
+.tri-hover {
+  position: relative;
+}
+
+.tri-hover::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--grey) 0 33.33%, #000 33.33% 66.66%, var(--red) 66.66% 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease);
+  pointer-events: none;
+}
+
+.tri-hover:hover::after,
+.tri-hover:focus-within::after {
+  transform: scaleX(1);
+}
+
+/* ==========================================================================
+   Form controls
+   ========================================================================== */
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.control {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-2);
+  color: var(--white);
+  font-size: 1rem;
+  appearance: none;
+  transition: border-color 0.2s ease;
+}
+
+.control:hover {
+  border-color: rgb(245 245 247 / 0.4);
+}
+
+.control:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 1px;
+}
+
+select.control {
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a8a8a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 18px;
+  cursor: pointer;
+}
+
+select.control option {
+  background: var(--surface-2);
+  color: var(--white);
+}
+
+/* ==========================================================================
+   Motion — premium but quiet. Everything is off for "reduce motion" users.
+   ========================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  /* Smooth page-to-page transitions (list → detail) where supported. */
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.35s;
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: 0.5s;
+    animation-timing-function: var(--ease);
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    height: 100%;
+    object-fit: cover;
+    overflow: clip;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Scroll-driven fade-up; browsers without support simply show the content. */
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+
+    .parallax {
+      animation: parallax linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes parallax {
+  to {
+    transform: translateY(18%) scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

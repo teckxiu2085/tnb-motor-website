@@ -1,0 +1,364 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CarCard from '../../components/CarCard.astro';
+import Icon from '../../components/Icon.astro';
+import TriBar from '../../components/TriBar.astro';
+import { getBrands, getSnapshotDate, getVehicles } from '../../data/vehicles';
+import { company } from '../../data/company';
+import { messages, waLink } from '../../lib/whatsapp';
+import { absoluteUrl } from '../../lib/url';
+import { BUDGETS, yearSteps } from '../../lib/filters';
+
+const vehicles = await getVehicles();
+const brands = await getBrands();
+const snapshot = await getSnapshotDate();
+const updated = snapshot
+  ? new Intl.DateTimeFormat('en-MY', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kuala_Lumpur' }).format(
+      new Date(snapshot),
+    )
+  : null;
+
+const years = yearSteps(vehicles);
+const rm = new Intl.NumberFormat('en-MY');
+const wa = waLink(messages.general());
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'TnB MOTOR — cars in stock',
+  numberOfItems: vehicles.length,
+  itemListElement: vehicles.map((v, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: absoluteUrl(`cars/${v.slug}/`, Astro.site),
+    name: v.label,
+  })),
+};
+---
+
+<Layout
+  title={`Used & recond cars for sale in Pasir Gudang, Johor · ${vehicles.length} cars | TnB MOTOR`}
+  description={`Browse ${vehicles.length} used and recond cars at TnB MOTOR, Pasir Gudang — filter by brand, budget and year. Cash and loan prices in RM. WhatsApp ${company.phone ?? 'us'} for details.`}
+  path="cars/"
+  current="cars"
+  jsonLd={[itemList]}
+>
+  <section class="list-head">
+    <div class="container list-head__inner">
+      <p class="eyebrow">{updated ? `Stock list · updated ${updated}` : 'Stock list'}</p>
+      <h1 class="display">Our cars</h1>
+      <TriBar />
+      <p class="lead"><span class="mono">{vehicles.length}</span> used &amp; recond cars in {company.city}, {company.state}.</p>
+    </div>
+  </section>
+
+  <div class="toolbar" data-toolbar>
+    <div class="container toolbar__inner">
+      <label class="search">
+        <span class="visually-hidden">Search cars</span>
+        <Icon name="search" />
+        <input
+          class="control search__input"
+          type="search"
+          name="q"
+          form="car-filters"
+          placeholder="Search cars"
+          autocomplete="off"
+          enterkeyhint="search"
+        />
+      </label>
+      <button class="btn btn--outline btn--sm toolbar__toggle" type="button" aria-controls="car-filters" aria-expanded="false" data-filters-open>
+        <Icon name="filter" />
+        Filters<span class="toolbar__badge mono" data-filter-count hidden></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="filters-backdrop" data-filters-backdrop hidden></div>
+  <form id="car-filters" class="filters" aria-label="Filter cars" data-filters>
+    <div class="container filters__inner">
+      <div class="filters__head">
+        <p class="h3">Filters</p>
+        <button class="filters__close" type="button" aria-label="Close filters" data-filters-close>
+          <Icon name="close" />
+        </button>
+      </div>
+      <div class="filters__grid">
+        <label class="field">
+          <span class="field__label">Brand</span>
+          <select class="control" name="brand">
+            <option value="">All brands ({vehicles.length})</option>
+            {brands.map((b) => <option value={b.key}>{b.label} ({b.count})</option>)}
+          </select>
+        </label>
+        <label class="field">
+          <span class="field__label">Cash budget</span>
+          <select class="control" name="max">
+            <option value="">Any budget</option>
+            {BUDGETS.map((b) => <option value={b}>Up to RM {rm.format(b)}</option>)}
+          </select>
+        </label>
+        <label class="field">
+          <span class="field__label">Year</span>
+          <select class="control" name="year">
+            <option value="">Any year</option>
+            {years.map((y) => <option value={y}>{y} or newer</option>)}
+          </select>
+        </label>
+        <label class="field">
+          <span class="field__label">Sort by</span>
+          <select class="control" name="sort">
+            <option value="">Recommended</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="year-desc">Year: newest first</option>
+          </select>
+        </label>
+      </div>
+      <input type="hidden" name="ask" value="" />
+      <div class="filters__actions">
+        <button class="btn btn--outline btn--sm" type="reset" data-filters-reset>Clear all</button>
+        <button class="btn btn--light btn--sm filters__apply" type="button" data-filters-close>
+          <span>Show <span class="mono" data-apply-count>{vehicles.length}</span> cars</span>
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <section class="results container" aria-label="Cars">
+    <p class="results__count" aria-live="polite" data-result-count>
+      Showing <span class="mono">{vehicles.length}</span> cars
+    </p>
+
+    <div class="results__grid" data-car-list>
+      {vehicles.map((car, i) => <CarCard car={car} headingLevel={2} eager={i < 2} priority={i === 0} filterData />)}
+    </div>
+
+    <div class="results__ask" data-ask-notice hidden>
+      <p>
+        <span class="mono" data-ask-count>0</span> more cars match but have no price listed yet.
+      </p>
+      <button class="btn btn--outline btn--sm" type="button" data-ask-show>Show them too</button>
+    </div>
+
+    <div class="results__empty" data-empty hidden>
+      <p class="h3">No cars match these filters.</p>
+      <p class="muted">Try clearing a filter, or WhatsApp us and tell us what you are looking for.</p>
+      <div class="results__empty-actions">
+        <button class="btn btn--outline btn--sm" type="button" data-filters-reset>Clear filters</button>
+        {
+          wa && (
+            <a class="btn btn--red btn--sm" href={wa} target="_blank" rel="noopener">
+              <Icon name="whatsapp" /> WhatsApp us
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { initCarFilters } from '../../scripts/car-filters';
+  initCarFilters();
+</script>
+
+<style>
+  .list-head {
+    padding-block: clamp(40px, 8vw, 96px) clamp(24px, 4vw, 40px);
+  }
+  .list-head__inner {
+    display: grid;
+    gap: 18px;
+  }
+
+  /* Sticky search bar */
+  .toolbar {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 30;
+    padding-block: 12px;
+    background: rgb(11 11 12 / 0.86);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .toolbar__inner {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .search {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+  .search :global(.icon) {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--grey);
+    pointer-events: none;
+  }
+  .search__input {
+    min-height: 46px;
+    padding-left: 44px;
+    border-radius: 999px;
+  }
+  .search__input::-webkit-search-cancel-button {
+    filter: invert(1);
+  }
+  .toolbar__toggle {
+    min-height: 46px;
+  }
+  .toolbar__badge {
+    display: inline-grid;
+    place-items: center;
+    min-width: 22px;
+    height: 22px;
+    margin-left: 4px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--red);
+    color: #fff;
+    font-size: 0.75rem;
+  }
+  .toolbar__badge[hidden] {
+    display: none;
+  }
+
+  /* Filters: inline on desktop, bottom sheet on phones (when JS is available) */
+  .filters {
+    padding-block: 20px 4px;
+  }
+  .filters__head,
+  .filters__apply {
+    display: none;
+  }
+  .filters__grid {
+    display: grid;
+    gap: 14px;
+  }
+  .filters__actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .filters-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgb(0 0 0 / 0.6);
+  }
+  .filters-backdrop[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 899px) {
+    :global(.js) .filters {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 70;
+      max-height: 88svh;
+      overflow-y: auto;
+      padding: 8px 0 calc(20px + env(safe-area-inset-bottom));
+      border-radius: 22px 22px 0 0;
+      border-top: 1px solid var(--line-strong);
+      background: var(--surface);
+      transform: translateY(105%);
+      visibility: hidden;
+      transition:
+        transform 0.4s var(--ease),
+        visibility 0s linear 0.4s;
+    }
+    :global(.js) .filters.is-open {
+      transform: none;
+      visibility: visible;
+      transition: transform 0.4s var(--ease);
+    }
+    :global(.js) .filters__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-block: 8px 12px;
+    }
+    :global(.js) .filters__apply {
+      display: inline-flex;
+      flex: 1;
+    }
+    .filters__close {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--surface-2);
+      cursor: pointer;
+    }
+  }
+  @media (min-width: 900px) {
+    .toolbar__toggle {
+      display: none;
+    }
+    .filters__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .filters__actions {
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+  }
+
+  /* Results */
+  .results {
+    padding-block: 20px clamp(64px, 10vw, 120px);
+  }
+  .results__count {
+    margin-bottom: 18px;
+    color: var(--grey);
+    font-size: 0.9rem;
+  }
+  .results__grid {
+    display: grid;
+    gap: 18px;
+  }
+  @media (min-width: 640px) {
+    .results__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .results__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+  }
+  @media (min-width: 1400px) {
+    .results__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .results__ask,
+  .results__empty {
+    display: grid;
+    gap: 14px;
+    justify-items: start;
+    margin-top: 28px;
+    padding: 24px;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius);
+  }
+  .results__ask[hidden],
+  .results__empty[hidden] {
+    display: none;
+  }
+  .results__empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+</style>

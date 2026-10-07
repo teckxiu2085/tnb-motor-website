@@ -1,0 +1,48 @@
+---
+import Icon from './Icon.astro';
+import { waLink, messages } from '../lib/whatsapp';
+
+const wa = waLink(messages.general());
+---
+
+{
+  wa && (
+    <a class="fab-wa" href={wa} target="_blank" rel="noopener" aria-label="Chat with TnB MOTOR on WhatsApp">
+      <Icon name="whatsapp" />
+    </a>
+  )
+}
+
+<style>
+  .fab-wa {
+    position: fixed;
+    right: max(16px, env(safe-area-inset-right));
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+    box-shadow:
+      0 10px 30px rgb(227 11 7 / 0.35),
+      0 2px 8px rgb(0 0 0 / 0.5);
+    transition: transform 0.25s var(--ease);
+    view-transition-name: fab-wa;
+  }
+  .fab-wa:hover {
+    transform: scale(1.06);
+  }
+  .fab-wa :global(svg) {
+    width: 30px;
+    height: 30px;
+  }
+  @media (min-width: 900px) {
+    .fab-wa {
+      right: 28px;
+      bottom: 28px;
+    }
+  }
+</style>

@@ -1,0 +1,368 @@
+---
+// Monthly instalment estimate (flat-rate hire purchase), using TnB's financing rules from
+// content/company.json → loanEstimator: Bank or Credit, each with its own default rate and
+// a car-age limit (car age + loan period), capped at the maximum loan period.
+import Icon from './Icon.astro';
+import { company } from '../data/company';
+import type { Vehicle } from '../data/vehicles';
+import { formatRM, maxTenure, monthlyInstalment } from '../lib/format';
+import { messages, waLink } from '../lib/whatsapp';
+
+interface Props {
+  car: Vehicle;
+  /** Absolute URL of the car page (for the WhatsApp message when no estimate is possible). */
+  url: string;
+}
+const { car, url } = Astro.props;
+
+const nowYear = new Date().getFullYear();
+const { downPaymentPercent: down, maxTenureYears } = company.loanEstimator;
+const options = company.loanEstimator.options.map((o) => ({
+  ...o,
+  maxYears: maxTenure(car.year, o.maxCarAgePlusTenure, maxTenureYears, nowYear),
+}));
+const price = car.loanPriceRM;
+const selected = options.find((o) => o.maxYears > 0);
+const canEstimate = price !== null && selected !== undefined;
+const unavailable = options.filter((o) => o.maxYears === 0);
+const id = `est-${car.slug}`;
+const wa = waLink(messages.car(car, url));
+const plural = (n: number) => `${n} year${n === 1 ? '' : 's'}`;
+const limits = options.map((o) => `${o.label} ${o.maxYears > 0 ? `up to ${plural(o.maxYears)}` : 'not available'}`).join(' · ');
+const initial = canEstimate ? monthlyInstalment(price!, down, selected!.interestRatePercent, selected!.maxYears) : 0;
+---
+
+{
+  canEstimate ? (
+    <section class="estimator" aria-labelledby={`${id}-title`} data-estimator data-price={price}>
+      <div class="estimator__head">
+        <h2 class="estimator__title" id={`${id}-title`}>
+          Monthly instalment estimate
+        </h2>
+        <p class="estimator__result" aria-live="polite">
+          <span class="mono" data-monthly>
+            {formatRM(Math.round(initial))}
+          </span>
+          <span class="estimator__per">/ month</span>
+        </p>
+        <p class="estimator__basis">
+          Based on the loan price of <span class="mono">{formatRM(price)}</span>
+        </p>
+      </div>
+
+      <div class="estimator__controls">
+        <fieldset class="estimator__group">
+          <legend class="field__label">Financing</legend>
+          <div class="segmented">
+            {options.map((o) => (
+              <label class:list={{ 'is-disabled': o.maxYears === 0 }}>
+                <input
+                  type="radio"
+                  name={`${id}-type`}
+                  value={o.id}
+                  checked={o === selected}
+                  disabled={o.maxYears === 0}
+                  data-type
+                  data-rate={o.interestRatePercent}
+                  data-max={o.maxYears}
+                />
+                <span>
+                  {o.label}
+                  <small class="mono">{o.maxYears > 0 ? `${o.interestRatePercent}%` : 'N/A'}</small>
+                </span>
+              </label>
+            ))}
+          </div>
+          {unavailable.length > 0 && (
+            <p class="estimator__hint">
+              {unavailable.map((o) => o.label).join(' and ')} financing is not available for a {car.year} car.
+            </p>
+          )}
+        </fieldset>
+
+        <label class="estimator__row" for={`${id}-down`}>
+          <span class="field__label">Down payment</span>
+          <output class="mono" for={`${id}-down`} data-down-out>
+            {down}% · {formatRM(Math.round((price! * down) / 100))}
+          </output>
+        </label>
+        <input class="estimator__range" id={`${id}-down`} type="range" min="0" max="50" step="5" value={down} data-down />
+
+        <div class="estimator__pair">
+          <label class="field" for={`${id}-years`}>
+            <span class="field__label">Loan period</span>
+            <select class="control" id={`${id}-years`} data-years>
+              {Array.from({ length: selected!.maxYears }, (_, i) => i + 1).map((y) => (
+                <option value={y} selected={y === selected!.maxYears}>
+                  {plural(y)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label class="field" for={`${id}-rate`}>
+            <span class="field__label">Interest (flat, p.a.)</span>
+            <span class="estimator__rate-input">
+              <input
+                class="control mono"
+                id={`${id}-rate`}
+                type="number"
+                inputmode="decimal"
+                min="0"
+                max="20"
+                step="0.05"
+                value={selected!.interestRatePercent}
+                data-rate-input
+              />
+              <span aria-hidden="true">%</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <p class="estimator__limits">
+        Max loan period for this {car.year} car: <strong>{limits}</strong>
+      </p>
+      <p class="estimator__note">
+        <strong>Estimate only, subject to bank approval.</strong> Ask our team for an exact quote.
+      </p>
+    </section>
+  ) : (
+    car.loanPriceRM !== null && (
+      <section class="estimator estimator--ask" aria-label="Financing">
+        <h2 class="estimator__title">Financing</h2>
+        <p>Ask our team about financing options for this {car.year} car.</p>
+        {wa && (
+          <a class="text-link" href={wa} target="_blank" rel="noopener">
+            Ask on WhatsApp <Icon name="arrow" />
+          </a>
+        )}
+      </section>
+    )
+  )
+}
+
+<script>
+  import { monthlyInstalment } from '../lib/format';
+
+  const rm = new Intl.NumberFormat('en-MY', { maximumFractionDigits: 0 });
+  const plural = (n: number) => `${n} year${n === 1 ? '' : 's'}`;
+
+  document.querySelectorAll<HTMLElement>('[data-estimator]').forEach((root) => {
+    const price = Number(root.dataset.price);
+    const down = root.querySelector<HTMLInputElement>('[data-down]')!;
+    const rate = root.querySelector<HTMLInputElement>('[data-rate-input]')!;
+    const years = root.querySelector<HTMLSelectElement>('[data-years]')!;
+    const types = [...root.querySelectorAll<HTMLInputElement>('[data-type]')];
+    const out = root.querySelector('[data-monthly]')!;
+    const downOut = root.querySelector('[data-down-out]')!;
+
+    const update = () => {
+      const d = Number(down.value);
+      const r = Math.max(0, Number(rate.value) || 0);
+      const y = Math.max(1, Number(years.value) || 1);
+      out.textContent = `RM ${rm.format(Math.round(monthlyInstalment(price, d, r, y)))}`;
+      downOut.textContent = `${d}% · RM ${rm.format(Math.round((price * d) / 100))}`;
+      down.style.setProperty('--fill', `${(d / Number(down.max)) * 100}%`);
+    };
+
+    // Switching Bank ↔ Credit applies that option's default rate and its own maximum loan period.
+    types.forEach((type) =>
+      type.addEventListener('change', () => {
+        const max = Number(type.dataset.max);
+        years.replaceChildren(
+          ...Array.from({ length: max }, (_, i) => new Option(plural(i + 1), String(i + 1), i + 1 === max, i + 1 === max)),
+        );
+        rate.value = type.dataset.rate ?? rate.value;
+        update();
+      }),
+    );
+    root.addEventListener('input', update);
+    root.addEventListener('change', update);
+    update();
+  });
+</script>
+
+<style>
+  .estimator {
+    display: grid;
+    gap: 22px;
+    padding: clamp(20px, 4vw, 28px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .estimator--ask {
+    gap: 10px;
+    color: var(--grey);
+  }
+  .estimator__title {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+  .estimator__result {
+    margin-top: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .estimator__result .mono {
+    font-size: clamp(2rem, 8vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .estimator__per {
+    color: var(--grey);
+  }
+  .estimator__basis {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: var(--grey);
+  }
+  .estimator__controls {
+    display: grid;
+    gap: 16px;
+  }
+  .estimator__group {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .estimator__group legend {
+    margin-bottom: 8px;
+  }
+  .estimator__hint {
+    font-size: 0.8rem;
+    color: var(--grey);
+  }
+  .estimator__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .estimator__row output {
+    font-size: 0.95rem;
+  }
+  .estimator__range {
+    --fill: 20%;
+    width: 100%;
+    height: 32px;
+    margin: -6px 0 0;
+    background: transparent;
+    appearance: none;
+    cursor: pointer;
+  }
+  .estimator__range::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--red) var(--fill), var(--surface-2) var(--fill));
+  }
+  .estimator__range::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--surface-2);
+  }
+  .estimator__range::-moz-range-progress {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--red);
+  }
+  .estimator__range::-webkit-slider-thumb {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    margin-top: -10px;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.5);
+  }
+  .estimator__range::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--white);
+  }
+  .estimator__pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .segmented {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--surface-2);
+  }
+  .segmented label {
+    position: relative;
+  }
+  .segmented input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .segmented span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--grey);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .segmented small {
+    font-size: 0.75rem;
+    font-weight: 500;
+    opacity: 0.8;
+  }
+  .segmented input:checked + span {
+    background: var(--white);
+    color: var(--black);
+  }
+  .segmented input:focus-visible + span {
+    outline: 2px solid var(--white);
+    outline-offset: 2px;
+  }
+  .segmented .is-disabled span {
+    opacity: 0.4;
+    text-decoration: line-through;
+  }
+  .segmented .is-disabled input {
+    cursor: not-allowed;
+  }
+  .estimator__rate-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .estimator__rate-input .control {
+    text-align: right;
+  }
+  .estimator__limits,
+  .estimator__note {
+    font-size: 0.85rem;
+    color: var(--grey);
+  }
+  .estimator__note strong,
+  .estimator__limits strong {
+    color: var(--white);
+    font-weight: 600;
+  }
+</style>
