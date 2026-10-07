@@ -15,4 +15,5 @@ export const messages = {
   photos: (car: Vehicle, url: string) =>
     `Hi ${company.brandName}, could you send me photos of the ${carLabel(car)}? ${url}`,
   sell: () => `Hi ${company.brandName}, I'd like to sell / consign my car.\nModel:\nYear:`,
+  team: (name: string) => `Hi ${company.brandName}, I'd like to speak with ${name}.`,
 };

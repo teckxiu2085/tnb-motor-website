@@ -37,7 +37,31 @@ const social = Object.entries(raw.social)
   .map(([network, url]) => ({ network, url: pick(url) }))
   .filter((s): s is { network: string; url: string } => s.url !== null);
 
-const estimator = raw.loanEstimator;
+export interface WhyItem {
+  icon: string;
+  title: string;
+  text: string;
+}
+
+const whyTnb: WhyItem[] = (raw.whyTnb as unknown[])
+  .filter((item): item is WhyItem => {
+    const i = item as Partial<WhyItem> | null;
+    return Boolean(i && isFilled(i.title) && isFilled(i.text));
+  })
+  .map((i) => ({ icon: i.icon ?? '', title: i.title.trim(), text: i.text.trim() }));
+
+export interface FinanceOption {
+  id: string;
+  label: string;
+  interestRatePercent: number;
+  maxCarAgePlusTenure: number;
+}
+
+const estimator = {
+  downPaymentPercent: raw.loanEstimator.downPaymentPercent,
+  maxTenureYears: raw.loanEstimator.maxTenureYears,
+  options: raw.loanEstimator.options as FinanceOption[],
+};
 
 export const company = {
   legalName: raw.legalName,
@@ -58,12 +82,8 @@ export const company = {
   social,
   team,
   pricingNotes: raw.pricingNotes.filter(isFilled),
-  whyTnb: (raw.whyTnb as unknown[]).filter(isFilled),
-  loanEstimator: {
-    downPaymentPercent: estimator.downPaymentPercent,
-    interestRatePercent: estimator.interestRatePercent,
-    tenureYears: estimator.tenureYears,
-  },
+  whyTnb,
+  loanEstimator: estimator,
 };
 
 export const wazeUrl = company.geo

@@ -9,6 +9,7 @@ import NoPhotoPoster from '../../components/NoPhotoPoster.astro';
 import ShareButton from '../../components/ShareButton.astro';
 import StickyContact from '../../components/StickyContact.astro';
 import TriBar from '../../components/TriBar.astro';
+import TnbStandard from '../../components/TnbStandard.astro';
 import { getVehicles, relatedTo, type Vehicle } from '../../data/vehicles';
 import { company, wazeUrl } from '../../data/company';
 import { ASK_FOR_PRICE, formatRM } from '../../lib/format';
@@ -181,6 +182,8 @@ const breadcrumbLd = {
         </div>
       </div>
 
+      <TnbStandard variant="compact" />
+
       <section class="specs" aria-labelledby="specs-title">
         <h2 class="section-label" id="specs-title">Specifications</h2>
         <dl>
@@ -211,7 +214,7 @@ const breadcrumbLd = {
         </dl>
       </section>
 
-      {car.loanPriceRM && <LoanEstimator price={car.loanPriceRM} />}
+      <LoanEstimator car={car} url={url} />
 
       {
         company.address && (
