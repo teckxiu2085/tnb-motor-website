@@ -128,7 +128,7 @@ const year = new Date().getFullYear();
   .site-footer {
     border-top: 1px solid var(--line);
     padding-block: clamp(48px, 8vw, 88px) calc(32px + env(safe-area-inset-bottom));
-    background: #070708;
+    background: var(--bg-alt);
     font-size: 0.95rem;
   }
   .site-footer__top {
@@ -167,22 +167,22 @@ const year = new Date().getFullYear();
     gap: 10px;
     min-height: 40px;
     text-decoration: none;
-    color: var(--white);
+    color: var(--ink);
   }
   .site-footer__list a:hover {
-    color: #fff;
+    color: var(--red-text);
     text-decoration: underline;
     text-underline-offset: 4px;
   }
   .site-footer__list :global(.icon) {
     width: 18px;
     height: 18px;
-    color: var(--grey);
+    color: var(--muted);
     flex: none;
   }
   .site-footer__address {
     font-style: normal;
-    color: var(--grey);
+    color: var(--muted);
     max-width: 22rem;
     margin-bottom: 8px;
   }
@@ -192,7 +192,7 @@ const year = new Date().getFullYear();
   .site-footer__notes {
     display: grid;
     gap: 14px;
-    color: var(--grey);
+    color: var(--muted);
     font-size: 0.85rem;
   }
   .site-footer__notes ul {

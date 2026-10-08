@@ -193,7 +193,7 @@ const initial = canEstimate ? monthlyInstalment(price!, down, selected!.interest
   }
   .estimator--ask {
     gap: 10px;
-    color: var(--grey);
+    color: var(--muted);
   }
   .estimator__title {
     font-family: var(--font-display);
@@ -201,7 +201,7 @@ const initial = canEstimate ? monthlyInstalment(price!, down, selected!.interest
     font-weight: 600;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--grey);
+    color: var(--muted);
   }
   .estimator__result {
     margin-top: 8px;
@@ -215,12 +215,12 @@ const initial = canEstimate ? monthlyInstalment(price!, down, selected!.interest
     letter-spacing: -0.02em;
   }
   .estimator__per {
-    color: var(--grey);
+    color: var(--muted);
   }
   .estimator__basis {
     margin-top: 4px;
     font-size: 0.85rem;
-    color: var(--grey);
+    color: var(--muted);
   }
   .estimator__controls {
     display: grid;
@@ -238,7 +238,7 @@ const initial = canEstimate ? monthlyInstalment(price!, down, selected!.interest
   }
   .estimator__hint {
     font-size: 0.8rem;
-    color: var(--grey);
+    color: var(--muted);
   }
   .estimator__row {
     display: flex;
@@ -261,12 +261,12 @@ const initial = canEstimate ? monthlyInstalment(price!, down, selected!.interest
   .estimator__range::-webkit-slider-runnable-track {
     height: 4px;
     border-radius: 2px;
-    background: linear-gradient(90deg, var(--red) var(--fill), var(--surface-2) var(--fill));
+    background: linear-gradient(90deg, var(--red) var(--fill), var(--line-strong) var(--fill));
   }
   .estimator__range::-moz-range-track {
     height: 4px;
     border-radius: 2px;
-    background: var(--surface-2);
+    background: var(--line-strong);
   }
   .estimator__range::-moz-range-progress {
     height: 4px;
@@ -279,15 +279,18 @@ const initial = canEstimate ? monthlyInstalment(price!, down, selected!.interest
     height: 24px;
     margin-top: -10px;
     border-radius: 50%;
-    background: var(--white);
-    box-shadow: 0 2px 8px rgb(0 0 0 / 0.5);
+    background: #fff;
+    box-shadow:
+      0 0 0 1px var(--line-strong),
+      0 2px 6px rgb(11 11 12 / 0.22);
   }
   .estimator__range::-moz-range-thumb {
     width: 24px;
     height: 24px;
-    border: 0;
+    border: 1px solid var(--line-strong);
     border-radius: 50%;
-    background: var(--white);
+    background: #fff;
+    box-shadow: 0 2px 6px rgb(11 11 12 / 0.22);
   }
   .estimator__pair {
     display: grid;
@@ -322,7 +325,7 @@ const initial = canEstimate ? monthlyInstalment(price!, down, selected!.interest
     border-radius: 999px;
     font-size: 0.92rem;
     font-weight: 600;
-    color: var(--grey);
+    color: var(--muted);
     transition:
       background-color 0.2s ease,
       color 0.2s ease;
@@ -330,14 +333,13 @@ const initial = canEstimate ? monthlyInstalment(price!, down, selected!.interest
   .segmented small {
     font-size: 0.75rem;
     font-weight: 500;
-    opacity: 0.8;
   }
   .segmented input:checked + span {
-    background: var(--white);
-    color: var(--black);
+    background: var(--ink);
+    color: #fff;
   }
   .segmented input:focus-visible + span {
-    outline: 2px solid var(--white);
+    outline: 2px solid var(--ink);
     outline-offset: 2px;
   }
   .segmented .is-disabled span {
@@ -358,11 +360,11 @@ const initial = canEstimate ? monthlyInstalment(price!, down, selected!.interest
   .estimator__limits,
   .estimator__note {
     font-size: 0.85rem;
-    color: var(--grey);
+    color: var(--muted);
   }
   .estimator__note strong,
   .estimator__limits strong {
-    color: var(--white);
+    color: var(--ink);
     font-weight: 600;
   }
 </style>

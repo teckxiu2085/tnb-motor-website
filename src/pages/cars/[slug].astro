@@ -270,7 +270,7 @@ const breadcrumbLd = {
 
   {
     related.length > 0 && (
-      <section class="related section" aria-labelledby="related-title">
+      <section class="related section section--alt" aria-labelledby="related-title">
         <div class="container">
           <div class="section-head section-head--row">
             <h2 class="h2" id="related-title">
@@ -326,7 +326,7 @@ const breadcrumbLd = {
     position: relative;
     aspect-ratio: 3 / 4;
     overflow: hidden;
-    background: #0e0e10;
+    background: var(--surface-2);
     container-type: inline-size;
   }
   .car__media-inner--poster,
@@ -360,7 +360,7 @@ const breadcrumbLd = {
   .gallery__hint {
     padding: 10px var(--gutter) 0;
     font-size: 0.8rem;
-    color: var(--grey);
+    color: var(--muted);
   }
 
   .car__info {
@@ -373,11 +373,11 @@ const breadcrumbLd = {
   }
   .car__back {
     justify-self: start;
-    color: var(--grey);
+    color: var(--muted);
     min-height: 44px;
   }
   .car__back:hover {
-    color: var(--white);
+    color: var(--ink);
   }
   .car__back :global(.car__back-icon) {
     transform: rotate(180deg);
@@ -399,7 +399,7 @@ const breadcrumbLd = {
     overflow-wrap: anywhere;
   }
   .car__meta {
-    color: var(--grey);
+    color: var(--muted);
     font-size: 0.9rem;
   }
 
@@ -417,7 +417,7 @@ const breadcrumbLd = {
     font-weight: 600;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--grey);
+    color: var(--muted);
   }
   .price__value {
     margin-top: 4px;
@@ -433,7 +433,7 @@ const breadcrumbLd = {
     display: grid;
     gap: 4px;
     font-size: 0.85rem;
-    color: var(--grey);
+    color: var(--muted);
   }
 
   .car__actions {
@@ -453,7 +453,7 @@ const breadcrumbLd = {
     font-weight: 600;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--grey);
+    color: var(--muted);
   }
   .specs dl {
     margin: 0;
@@ -468,7 +468,7 @@ const breadcrumbLd = {
     border-bottom: 1px solid var(--line);
   }
   .specs dt {
-    color: var(--grey);
+    color: var(--muted);
   }
   .specs dd {
     margin: 0;
@@ -479,7 +479,7 @@ const breadcrumbLd = {
   .visit-mini {
     display: grid;
     gap: 10px;
-    color: var(--grey);
+    color: var(--muted);
     font-size: 0.95rem;
   }
   .visit-mini p {
@@ -493,12 +493,9 @@ const breadcrumbLd = {
   .visit-mini__links {
     display: flex;
     gap: 24px;
-    color: var(--white);
+    color: var(--ink);
   }
 
-  .related {
-    border-top: 1px solid var(--line);
-  }
   .related__grid {
     display: grid;
     gap: 18px;

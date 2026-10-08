@@ -28,7 +28,7 @@ const wa = waLink(messages.general());
         WhatsApp us and tell us what you are looking for.
       </p>
       <div class="notfound__actions">
-        <a class="btn btn--light" href={withBase('cars/')}>
+        <a class="btn btn--dark" href={withBase('cars/')}>
           See all {vehicles.length} cars <Icon name="arrow" />
         </a>
         {
@@ -44,7 +44,7 @@ const wa = waLink(messages.general());
 
   {
     picks.length > 0 && (
-      <section class="section notfound__picks" aria-labelledby="nf-picks">
+      <section class="section section--alt notfound__picks" aria-labelledby="nf-picks">
         <div class="container">
           <h2 class="h2" id="nf-picks">
             In stock now
@@ -74,9 +74,6 @@ const wa = waLink(messages.general());
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 8px;
-  }
-  .notfound__picks {
-    border-top: 1px solid var(--line);
   }
   .notfound__grid {
     display: grid;

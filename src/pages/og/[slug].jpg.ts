@@ -18,9 +18,10 @@ export const getStaticPaths = (async () => {
   ];
 }) satisfies GetStaticPaths;
 
-const BG = '#0b0b0c';
+// Bright theme: white panel; the logo file has a white background, so it sits straight on it.
+const BG = '#ffffff';
 
-/** White rounded plate with the logo, plus the grey · black · red bar underneath (as an SVG overlay). */
+/** The logo (sized, with the spacing around it) for the left panel; the grey · black · red bar goes underneath. */
 async function brandBlock(logoHeight: number) {
   const logo = await sharp(resolve(process.cwd(), 'src/assets/brand/logo-trimmed.png'))
     .resize({ height: logoHeight })
@@ -38,19 +39,14 @@ function triBarSvg(width: number, height: number): Buffer {
   return Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
       `<rect x="0" y="0" width="${seg}" height="${height}" fill="#a8a8a8"/>` +
-      `<rect x="${seg + 8 + 1}" y="1" width="${seg - 2}" height="${height - 2}" fill="#000" stroke="#3a3a3d" stroke-width="2"/>` +
+      `<rect x="${seg + 8}" y="0" width="${seg}" height="${height}" fill="#000"/>` +
       `<rect x="${2 * seg + 16}" y="0" width="${seg}" height="${height}" fill="#e30b07"/>` +
       `</svg>`,
   );
 }
 
-function plateSvg(w: number, h: number): Buffer {
-  return Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="${w}" height="${h}" rx="${Math.round(h * 0.1)}" fill="#fff"/></svg>`,
-  );
-}
 
-/** Whole car photo (only resized, never cropped or edited) on the right, TnB logo plate on the left. */
+/** Whole car photo (only resized, never cropped or edited) on the right, TnB logo on white on the left. */
 async function carImage(file: string): Promise<Buffer> {
   const photo = await sharp(resolve(process.cwd(), 'src/assets/cars', file))
     .resize({ height: H })
@@ -64,7 +60,6 @@ async function carImage(file: string): Promise<Buffer> {
   return sharp({ create: { width: W, height: H, channels: 3, background: BG } })
     .composite([
       { input: photo.data, left: panelW, top: 0 },
-      { input: plateSvg(b.plateW, b.plateH), left: plateLeft, top: plateTop },
       { input: b.logo, left: plateLeft + b.padX, top: plateTop + b.padY },
       { input: triBarSvg(barW, 8), left: Math.round((panelW - barW) / 2), top: plateTop + b.plateH + 36 },
     ])
