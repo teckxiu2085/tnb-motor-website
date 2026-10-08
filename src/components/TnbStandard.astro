@@ -57,6 +57,7 @@ const items = company.whyTnb;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: var(--surface);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
   }
   .standard__item::after {
@@ -75,8 +76,8 @@ const items = company.whyTnb;
     width: 48px;
     height: 48px;
     border-radius: 14px;
-    background: var(--surface-2);
-    color: var(--white);
+    background: var(--red-tint);
+    color: var(--red);
   }
   .standard__icon :global(.icon) {
     width: 26px;
@@ -90,7 +91,7 @@ const items = company.whyTnb;
     line-height: 1.2;
   }
   .standard__text {
-    color: var(--grey);
+    color: var(--muted);
     font-size: 0.95rem;
   }
   @media (min-width: 640px) {
@@ -135,6 +136,6 @@ const items = company.whyTnb;
     gap: 10px;
   }
   .standard-strip :global(.icon) {
-    color: var(--grey);
+    color: var(--red);
   }
 </style>

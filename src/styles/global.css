@@ -1,19 +1,27 @@
 /* ==========================================================================
-   TnB MOTOR — design tokens (from the company brand guide)
+   TnB MOTOR — design tokens. Bright & professional (owner's request, Oct 2026):
+   white pages, dark text, brand red for buttons and accents.
    ========================================================================== */
 :root {
-  --red: #e30b07; /* brand red: accents, buttons */
-  --red-on-dark: #ff453a; /* small red text on dark backgrounds */
-  --grey: #a8a8a8; /* brand grey */
-  --black: #0b0b0c; /* background */
-  --white: #f5f5f7; /* text */
+  /* Brand colours (company brand guide) */
+  --red: #e30b07; /* buttons, accents — white text on it: 4.9:1 */
+  --red-hover: #c80905;
+  --red-text: #d00a06; /* small red text: readable on white and on --bg-alt */
+  --red-tint: #fdeceb; /* soft red behind icons */
+  --grey: #a8a8a8; /* brand grey — decoration only (tri-bar); too light for text on white */
 
-  --surface: #141416;
-  --surface-2: #1c1c1f;
-  --line: rgb(245 245 247 / 0.12);
-  --line-strong: rgb(245 245 247 / 0.24);
-  --ink-on-light: #0b0b0c;
-  --muted-on-light: #55555a;
+  /* Bright theme */
+  --bg: #ffffff;
+  --bg-alt: #f5f5f7; /* alternate section background */
+  --ink: #0b0b0c; /* text (brand black) */
+  --muted: #5c5c63; /* secondary text: 6.6:1 on white, 6.1:1 on --bg-alt */
+  --surface: #ffffff; /* cards */
+  --surface-2: #f5f5f7; /* inputs, chips, photo placeholders */
+  --line: #e4e4e8;
+  --line-strong: #cfcfd5;
+  --shadow-sm: 0 1px 2px rgb(11 11 12 / 0.05), 0 2px 10px rgb(11 11 12 / 0.05);
+  --shadow-md: 0 2px 6px rgb(11 11 12 / 0.06), 0 14px 32px rgb(11 11 12 / 0.09);
+  --shadow-lg: 0 24px 60px rgb(11 11 12 / 0.12);
 
   --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
@@ -24,7 +32,7 @@
   --header-h: 64px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 /* ==========================================================================
@@ -45,8 +53,8 @@ html {
 body {
   margin: 0;
   min-height: 100svh;
-  background: var(--black);
-  color: var(--white);
+  background: var(--bg);
+  color: var(--ink);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.55;
@@ -91,12 +99,8 @@ p {
 }
 
 :focus-visible {
-  outline: 2px solid var(--white);
+  outline: 2px solid var(--ink);
   outline-offset: 3px;
-}
-
-.section--light :focus-visible {
-  outline-color: var(--ink-on-light);
 }
 
 .visually-hidden {
@@ -118,8 +122,8 @@ p {
   z-index: 100;
   padding: 10px 16px;
   border-radius: 999px;
-  background: var(--white);
-  color: var(--black);
+  background: var(--ink);
+  color: #fff;
   font-weight: 600;
   text-decoration: none;
 }
@@ -140,9 +144,8 @@ p {
   padding-block: clamp(56px, 10vw, 120px);
 }
 
-.section--light {
-  background: var(--white);
-  color: var(--ink-on-light);
+.section--alt {
+  background: var(--bg-alt);
 }
 
 .eyebrow {
@@ -151,11 +154,7 @@ p {
   font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--grey);
-}
-
-.section--light .eyebrow {
-  color: var(--muted-on-light);
+  color: var(--muted);
 }
 
 .display {
@@ -183,12 +182,8 @@ p {
 
 .lead {
   font-size: clamp(1.05rem, 2.6vw, 1.25rem);
-  color: var(--grey);
+  color: var(--muted);
   max-width: 38rem;
-}
-
-.section--light .lead {
-  color: var(--muted-on-light);
 }
 
 .mono {
@@ -197,7 +192,7 @@ p {
 }
 
 .muted {
-  color: var(--grey);
+  color: var(--muted);
 }
 
 .section-head {
@@ -216,7 +211,7 @@ p {
    ========================================================================== */
 .btn {
   --btn-bg: transparent;
-  --btn-fg: var(--white);
+  --btn-fg: var(--ink);
   --btn-border: var(--line-strong);
   position: relative;
   display: inline-flex;
@@ -260,31 +255,27 @@ p {
 }
 
 .btn--red:hover {
-  --btn-bg: #f2140f;
-  --btn-border: #f2140f;
+  --btn-bg: var(--red-hover);
+  --btn-border: var(--red-hover);
+}
+
+.btn--outline {
+  --btn-bg: var(--bg);
 }
 
 .btn--outline:hover {
-  --btn-border: var(--white);
+  --btn-border: var(--ink);
 }
 
-.btn--light {
-  --btn-bg: var(--white);
-  --btn-fg: var(--black);
-  --btn-border: var(--white);
+.btn--dark {
+  --btn-bg: var(--ink);
+  --btn-fg: #fff;
+  --btn-border: var(--ink);
 }
 
-.btn--light:hover {
-  --btn-bg: #fff;
-}
-
-.section--light .btn--outline {
-  --btn-fg: var(--ink-on-light);
-  --btn-border: rgb(11 11 12 / 0.25);
-}
-
-.section--light .btn--outline:hover {
-  --btn-border: var(--ink-on-light);
+.btn--dark:hover {
+  --btn-bg: #2b2b30;
+  --btn-border: #2b2b30;
 }
 
 .btn--sm {
@@ -355,7 +346,7 @@ p {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--grey);
+  color: var(--muted);
 }
 
 .control {
@@ -364,25 +355,25 @@ p {
   padding: 0 16px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
-  background-color: var(--surface-2);
-  color: var(--white);
+  background-color: var(--bg);
+  color: var(--ink);
   font-size: 1rem;
   appearance: none;
   transition: border-color 0.2s ease;
 }
 
 .control:hover {
-  border-color: rgb(245 245 247 / 0.4);
+  border-color: #a9a9b2;
 }
 
 .control:focus-visible {
-  outline: 2px solid var(--white);
+  outline: 2px solid var(--ink);
   outline-offset: 1px;
 }
 
 select.control {
   padding-right: 44px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a8a8a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235c5c63' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
   background-size: 18px;
@@ -390,8 +381,8 @@ select.control {
 }
 
 select.control option {
-  background: var(--surface-2);
-  color: var(--white);
+  background: #fff;
+  color: var(--ink);
 }
 
 /* ==========================================================================
@@ -432,11 +423,6 @@ select.control option {
       animation-range: entry 0% entry 35%;
     }
 
-    .parallax {
-      animation: parallax linear both;
-      animation-timeline: view();
-      animation-range: exit 0% exit 100%;
-    }
   }
 }
 
@@ -448,12 +434,6 @@ select.control option {
   to {
     opacity: 1;
     transform: none;
-  }
-}
-
-@keyframes parallax {
-  to {
-    transform: translateY(18%) scale(1.04);
   }
 }
 

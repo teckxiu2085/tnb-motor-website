@@ -75,7 +75,7 @@ const dealerLd: Record<string, unknown> = {
                 src={hero.photos[0]}
                 alt={hero.colour ? `${hero.title} in ${hero.colour}` : hero.title}
                 widths={[480, 750, 1080, 1440]}
-                sizes="(min-width: 900px) 46vw, 100vw"
+                sizes="(min-width: 900px) 46vw, 92vw"
                 formats={['avif']}
                 fallbackFormat="webp"
                 loading="eager"
@@ -187,7 +187,7 @@ const dealerLd: Record<string, unknown> = {
   <!-- The TnB Standard -->
   {
     company.whyTnb.length > 0 && (
-      <section class="section standard-section" aria-labelledby="standard-title">
+      <section class="section section--alt" aria-labelledby="standard-title">
         <div class="container">
           <div class="section-head reveal">
             <p class="eyebrow">Why TnB MOTOR</p>
@@ -203,7 +203,7 @@ const dealerLd: Record<string, unknown> = {
   }
 
   <!-- Sell / consign -->
-  <section class="section section--light sell" id="sell" aria-labelledby="sell-title">
+  <section class="section sell" id="sell" aria-labelledby="sell-title">
     <div class="container sell__inner">
       <div class="sell__copy reveal">
         <p class="eyebrow">Sell or consign</p>
@@ -226,7 +226,7 @@ const dealerLd: Record<string, unknown> = {
   <!-- Team -->
   {
     company.team.length > 0 && (
-      <section class="section team" id="team" aria-labelledby="team-title">
+      <section class="section section--alt team" id="team" aria-labelledby="team-title">
         <div class="container">
           <div class="section-head section-head--row reveal">
             <div>
@@ -308,7 +308,7 @@ const dealerLd: Record<string, unknown> = {
             )}
             <div class="visit__actions">
               {company.googleMapsUrl && (
-                <a class="btn btn--light" href={company.googleMapsUrl} target="_blank" rel="noopener">
+                <a class="btn btn--dark" href={company.googleMapsUrl} target="_blank" rel="noopener">
                   <Icon name="map" />
                   Open in Google Maps
                 </a>
@@ -354,27 +354,27 @@ const dealerLd: Record<string, unknown> = {
   /* Hero */
   .hero {
     position: relative;
-    overflow: hidden;
   }
   .hero__inner {
     display: grid;
+    gap: 24px;
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+    padding-top: 16px;
   }
   .hero__media {
     display: block;
     position: relative;
+    border-radius: 20px;
   }
   .hero__frame {
     position: relative;
-    aspect-ratio: 4 / 5;
+    /* 4:3 on phones so the WhatsApp button is visible on the first screen */
+    aspect-ratio: 4 / 3;
     overflow: hidden;
-    background: #0e0e10;
-  }
-  .hero__frame::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, transparent 62%, var(--black) 100%);
-    pointer-events: none;
+    border-radius: 20px;
+    background: var(--surface-2);
+    box-shadow: var(--shadow-md);
   }
   .hero__frame :global(picture),
   .hero__frame :global(img) {
@@ -383,14 +383,13 @@ const dealerLd: Record<string, unknown> = {
   }
   .hero__frame :global(img) {
     object-fit: cover;
-    object-position: 50% 100%;
+    object-position: 50% 62%; /* same focal point as the car cards */
   }
   .hero__copy {
     position: relative;
     display: grid;
     gap: 18px;
-    width: min(100% - 2 * var(--gutter), 620px);
-    margin: -28px auto 0;
+    max-width: 620px;
     padding-bottom: clamp(32px, 6vw, 56px);
   }
   .hero__featured {
@@ -403,17 +402,17 @@ const dealerLd: Record<string, unknown> = {
     font-size: 0.85rem;
   }
   .hero__featured .eyebrow {
-    color: var(--red-on-dark);
+    color: var(--red-text);
   }
   .hero__featured-name {
     font-family: var(--font-mono);
     font-size: 0.78rem;
-    color: var(--white);
+    color: var(--ink);
   }
   .hero__featured :global(.icon) {
     width: 16px;
     height: 16px;
-    color: var(--grey);
+    color: var(--muted);
     transition: transform 0.3s var(--ease);
   }
   .hero__featured:hover :global(.icon) {
@@ -445,7 +444,7 @@ const dealerLd: Record<string, unknown> = {
     gap: 6px 18px;
     margin-top: 4px;
     font-size: 0.8rem;
-    color: var(--grey);
+    color: var(--muted);
   }
   .hero__facts span {
     display: inline-flex;
@@ -459,27 +458,11 @@ const dealerLd: Record<string, unknown> = {
     border-radius: 50%;
     background: var(--red);
   }
-  @media (prefers-reduced-motion: no-preference) {
-    @supports (animation-timeline: view()) {
-      .hero__frame :global(img) {
-        animation: hero-drift linear both;
-        animation-timeline: view();
-        animation-range: exit 0% exit 100%;
-      }
-    }
-  }
-  @keyframes hero-drift {
-    to {
-      transform: translateY(14%) scale(1.06);
-    }
-  }
   @media (min-width: 900px) {
     .hero__inner {
       grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
       align-items: center;
       gap: clamp(32px, 5vw, 80px);
-      width: min(100% - 2 * var(--gutter), var(--maxw));
-      margin-inline: auto;
       padding-block: clamp(32px, 5vw, 64px);
       min-height: calc(100svh - var(--header-h));
     }
@@ -491,13 +474,9 @@ const dealerLd: Record<string, unknown> = {
       max-height: calc(100svh - var(--header-h) - 96px);
       border-radius: 22px;
       margin-left: auto;
-    }
-    .hero__frame::after {
-      display: none;
+      box-shadow: var(--shadow-lg);
     }
     .hero__copy {
-      margin: 0;
-      width: auto;
       padding: 0;
     }
     .hero__title {
@@ -517,12 +496,10 @@ const dealerLd: Record<string, unknown> = {
     display: grid;
     gap: 16px;
     padding: clamp(20px, 4vw, 32px);
-    border: 1px solid var(--line-strong);
+    border: 1px solid var(--line);
     border-radius: 22px;
-    background:
-      radial-gradient(120% 120% at 100% 0%, rgb(227 11 7 / 0.12) 0%, transparent 45%),
-      var(--surface);
-    box-shadow: 0 30px 80px rgb(0 0 0 / 0.45);
+    background: var(--surface);
+    box-shadow: var(--shadow-md);
   }
   .quick__title {
     font-family: var(--font-display);
@@ -582,7 +559,7 @@ const dealerLd: Record<string, unknown> = {
     transition: border-color 0.3s ease;
   }
   .picks__more:hover {
-    border-color: var(--white);
+    border-color: var(--ink);
   }
   .picks__more :global(.icon) {
     width: 28px;
@@ -601,11 +578,6 @@ const dealerLd: Record<string, unknown> = {
       overflow: visible;
       gap: 22px;
     }
-  }
-
-  /* TnB Standard */
-  .standard-section {
-    border-top: 1px solid var(--line);
   }
 
   /* Sell */
@@ -650,6 +622,7 @@ const dealerLd: Record<string, unknown> = {
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: var(--surface);
+    box-shadow: var(--shadow-sm);
   }
   .member__avatar {
     flex: none;
@@ -677,12 +650,12 @@ const dealerLd: Record<string, unknown> = {
     text-transform: uppercase;
   }
   .member__role {
-    color: var(--grey);
+    color: var(--muted);
     font-size: 0.92rem;
   }
   .member__lang {
     margin-top: 2px;
-    color: var(--grey);
+    color: var(--muted);
     font-size: 0.78rem;
   }
   .member__wa {
@@ -693,14 +666,16 @@ const dealerLd: Record<string, unknown> = {
     height: 48px;
     border: 1px solid var(--line-strong);
     border-radius: 50%;
-    color: var(--white);
+    color: var(--ink);
     transition:
       background-color 0.25s ease,
-      border-color 0.25s ease;
+      border-color 0.25s ease,
+      color 0.25s ease;
   }
   .member__wa:hover {
     background: var(--red);
     border-color: var(--red);
+    color: #fff;
   }
   @media (min-width: 760px) {
     .team .section-head--row {
@@ -714,9 +689,6 @@ const dealerLd: Record<string, unknown> = {
   }
 
   /* Visit */
-  .visit {
-    border-top: 1px solid var(--line);
-  }
   .visit__inner {
     display: grid;
     gap: 32px;
@@ -733,12 +705,12 @@ const dealerLd: Record<string, unknown> = {
     align-items: flex-start;
     font-style: normal;
     font-size: 1.05rem;
-    color: var(--white);
+    color: var(--ink);
   }
   .visit__address :global(.icon),
   .visit__line :global(.icon) {
     margin-top: 3px;
-    color: var(--grey);
+    color: var(--muted);
   }
   .visit__line a {
     text-decoration: none;
@@ -752,12 +724,9 @@ const dealerLd: Record<string, unknown> = {
     display: grid;
     gap: 10px;
     padding: clamp(24px, 4vw, 36px);
-    border: 1px solid var(--line-strong);
+    border: 1px solid var(--line);
     border-radius: 22px;
-    background:
-      repeating-linear-gradient(0deg, rgb(255 255 255 / 0.035) 0 1px, transparent 1px 32px),
-      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.035) 0 1px, transparent 1px 32px),
-      radial-gradient(80% 80% at 30% 20%, #1f1f23 0%, var(--surface) 70%);
+    background: var(--bg-alt);
     overflow: hidden;
   }
   .visit__pin {
@@ -769,7 +738,7 @@ const dealerLd: Record<string, unknown> = {
     border-radius: 50%;
     background: var(--red);
     color: #fff;
-    box-shadow: 0 0 0 10px rgb(227 11 7 / 0.15);
+    box-shadow: 0 0 0 10px var(--red-tint);
   }
   .visit__pin :global(.icon) {
     width: 28px;
@@ -781,7 +750,7 @@ const dealerLd: Record<string, unknown> = {
     font-size: 1.15rem;
   }
   .visit__coords {
-    color: var(--grey);
+    color: var(--muted);
     font-size: 0.85rem;
   }
   .visit__actions {

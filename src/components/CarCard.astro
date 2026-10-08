@@ -117,12 +117,15 @@ const data = filterData
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: var(--surface);
+    box-shadow: var(--shadow-sm);
     transition:
       border-color 0.3s ease,
+      box-shadow 0.3s ease,
       transform 0.45s var(--ease);
   }
   .car-card:hover {
     border-color: var(--line-strong);
+    box-shadow: var(--shadow-md);
     transform: translateY(-3px);
   }
   .car-card[hidden] {
@@ -131,7 +134,7 @@ const data = filterData
   .car-card__media {
     aspect-ratio: 4 / 3;
     overflow: hidden;
-    background: #0e0e10;
+    background: var(--surface-2);
     container-type: inline-size;
   }
   .car-card__media :global(picture),
@@ -157,7 +160,7 @@ const data = filterData
     font-size: 0.72rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--grey);
+    color: var(--muted);
   }
   .car-card__model {
     font-family: var(--font-display);
@@ -180,12 +183,12 @@ const data = filterData
     outline: none;
   }
   .car-card:has(.car-card__link:focus-visible) {
-    outline: 2px solid var(--white);
+    outline: 2px solid var(--ink);
     outline-offset: 3px;
   }
   .car-card__meta {
     font-size: 0.8rem;
-    color: var(--grey);
+    color: var(--muted);
   }
   .car-card__prices {
     display: grid;
@@ -200,7 +203,7 @@ const data = filterData
     font-weight: 600;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--grey);
+    color: var(--muted);
   }
   .car-card__prices dd {
     margin: 2px 0 0;
