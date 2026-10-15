@@ -29,8 +29,6 @@ const { class: className, thick = false } = Astro.props;
   }
   .tribar > span:nth-child(2) {
     background: #000;
-    /* keep the black segment visible on dark backgrounds */
-    box-shadow: inset 0 0 0 1px var(--line-strong);
   }
   .tribar > span:nth-child(3) {
     background: var(--red);

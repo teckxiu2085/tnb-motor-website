@@ -1,18 +1,22 @@
 ---
-// The official logo is a white-background design: on dark areas it always sits on a white rounded plate.
+// The official logo is a white-background design (the file has a white background).
+// On white it sits directly on the page (`plain`); on any other background it sits on a white rounded plate.
 import { Image } from 'astro:assets';
 import logo from '../assets/brand/logo-trimmed.png';
 
 interface Props {
-  size?: 'sm' | 'md' | 'lg';
+  /** nav = header logo (38 px on phones, 44 px on bigger screens). */
+  size?: 'sm' | 'nav' | 'md' | 'lg';
+  /** Only on pure white backgrounds. */
+  plain?: boolean;
   class?: string;
 }
-const { size = 'sm', class: className } = Astro.props;
-const heights = { sm: 34, md: 56, lg: 96 };
+const { size = 'sm', plain = false, class: className } = Astro.props;
+const heights = { sm: 34, nav: 44, md: 56, lg: 96 };
 const h = heights[size];
 ---
 
-<span class:list={['logo-plate', `logo-plate--${size}`, className]}>
+<span class:list={['logo-plate', `logo-plate--${size}`, { 'logo-plate--plain': plain }, className]}>
   <Image
     src={logo}
     alt="TnB MOTOR — Used Car Dealer"
@@ -33,6 +37,7 @@ const h = heights[size];
     border-radius: 10px;
     padding: 6px 10px;
     line-height: 0;
+    box-shadow: var(--shadow-sm);
   }
   .logo-plate--md {
     border-radius: 14px;
@@ -41,5 +46,18 @@ const h = heights[size];
   .logo-plate--lg {
     border-radius: 18px;
     padding: 16px 24px;
+  }
+  .logo-plate--plain {
+    padding: 0;
+    box-shadow: none;
+  }
+  .logo-plate--nav :global(img) {
+    width: auto;
+    height: 38px;
+  }
+  @media (min-width: 900px) {
+    .logo-plate--nav :global(img) {
+      height: 44px;
+    }
   }
 </style>

@@ -16,7 +16,7 @@ const showVisit = Boolean(company.address);
 <header class="site-header">
   <div class="container site-header__inner">
     <a href={withBase('/')} class="site-header__logo" aria-label="TnB MOTOR home">
-      <LogoPlate size="sm" />
+      <LogoPlate size="nav" plain />
     </a>
     <nav aria-label="Main">
       <ul class="site-nav">
@@ -44,9 +44,8 @@ const showVisit = Boolean(company.address);
     top: 0;
     z-index: 50;
     height: var(--header-h);
-    background: rgb(11 11 12 / 0.78);
-    backdrop-filter: blur(16px) saturate(1.4);
-    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    /* solid white: the logo file has a white background and blends straight in */
+    background: var(--bg);
     border-bottom: 1px solid var(--line);
     view-transition-name: site-header;
   }
@@ -79,7 +78,7 @@ const showVisit = Boolean(company.address);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     text-decoration: none;
-    color: var(--white);
+    color: var(--ink);
   }
   .site-nav a:not(.btn)::after {
     content: '';
